@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="Circle.Application/Circle.Application.csproj" Id="b5b5d328-fab2-41e0-8a79-c7fe852ee03d" />
+    <Project Path="Circle.Domain/Circle.Domain.csproj" Id="3e11d8c6-4dd5-4c93-adfc-f70b2719a251" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="Circle.Persistence/Circle.Persistence.csproj" Id="159bdb75-83c5-482f-a879-bd146c6a1d5f" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="Circle.WebApi/Circle.WebApi.csproj" Id="67450324-0398-4eda-8f75-7997f4090d82" />
+  </Folder>
+</Solution>
