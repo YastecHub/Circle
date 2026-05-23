@@ -62,6 +62,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 app.MapControllers();
 
 app.Run();
