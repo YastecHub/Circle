@@ -14,7 +14,7 @@ public static class DependencyInjection
             ?? "Server=localhost;Port=3306;Database=circle;User ID=root;Password=your_password;";
 
         services.AddDbContext<CircleDbContext>(options =>
-            options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 0))));
+            options.UseMySQL(connectionString));
 
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<CircleDbContext>());
