@@ -63,4 +63,5 @@ jobs:
           app-name: 'circle'
           slot-name: 'Production'
           package: ./app
+          startup-command: 'dotnet Circle.WebApi.dll'
           

@@ -10,8 +10,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? "Server=localhost;Port=3306;Database=circle;User ID=root;Password=your_password;";
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            connectionString = "Server=localhost;Port=3306;Database=circle;User ID=root;Password=your_password;";
+        }
 
         services.AddDbContext<CircleDbContext>(options =>
             options.UseMySQL(connectionString));
