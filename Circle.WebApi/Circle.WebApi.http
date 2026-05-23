@@ -1,6 +1,57 @@
 @Circle.WebApi_HostAddress = http://localhost:5182
+@AccessToken = paste-token-here
 
-GET {{Circle.WebApi_HostAddress}}/weatherforecast/
+GET {{Circle.WebApi_HostAddress}}/api/health
 Accept: application/json
 
 ###
+
+POST {{Circle.WebApi_HostAddress}}/api/auth/bootstrap-admin
+Content-Type: application/json
+
+{
+  "email": "admin@circle.local",
+  "password": "Admin@12345",
+  "fullName": "Circle Admin",
+  "phone": "08000000000"
+}
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@circle.local",
+  "password": "Admin@12345"
+}
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/auth/verify-otp
+Content-Type: application/json
+
+{
+  "email": "admin@circle.local",
+  "code": "123456"
+}
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/users
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/users/credit-officers
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "email": "officer@circle.local",
+  "fullName": "Circle Credit Officer",
+  "phone": "08000000001",
+  "branch": "Main"
+}
+

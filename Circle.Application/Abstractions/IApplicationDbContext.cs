@@ -10,6 +10,8 @@ public interface IApplicationDbContext
     DbSet<CustomerDocument> CustomerDocuments { get; }
     DbSet<SystemSetting> SystemSettings { get; }
     DbSet<AuditLog> AuditLogs { get; }
+    DbSet<UserOtp> UserOtps { get; }
+    DbSet<RefreshToken> RefreshTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
