@@ -20,6 +20,7 @@ public static class DependencyInjection
             provider.GetRequiredService<CircleDbContext>());
 
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+        services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
 
         return services;
     }
