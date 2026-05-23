@@ -11,10 +11,10 @@ public static class DependencyInjection
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? "Host=localhost;Port=5432;Database=circle;Username=postgres;Password=postgres";
+            ?? "Server=localhost;Port=3306;Database=circle;User ID=root;Password=your_password;";
 
         services.AddDbContext<CircleDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 0))));
 
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<CircleDbContext>());
