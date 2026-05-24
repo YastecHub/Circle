@@ -9,6 +9,7 @@ public sealed class CircleDbContext(DbContextOptions<CircleDbContext> options, I
     : DbContext(options), IApplicationDbContext
 {
     public DbSet<User> Users => Set<User>();
+    public DbSet<CollectionActivity> CollectionActivities => Set<CollectionActivity>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<CustomerDocument> CustomerDocuments => Set<CustomerDocument>();
     public DbSet<CustomerVirtualAccount> CustomerVirtualAccounts => Set<CustomerVirtualAccount>();

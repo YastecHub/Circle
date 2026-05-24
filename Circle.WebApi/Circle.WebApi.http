@@ -159,6 +159,34 @@ Content-Type: application/json
 
 ###
 
+GET {{Circle.WebApi_HostAddress}}/api/collections/activities
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/collections/activities
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "customerId": "paste-customer-guid-here",
+  "loanId": "paste-loan-guid-here",
+  "repaymentScheduleId": null,
+  "activityType": "PhoneCall",
+  "outcome": "PromiseToPay",
+  "promisedPaymentDate": "2026-05-30",
+  "promisedAmount": 2200,
+  "notes": "Customer promised to pay the overdue installment."
+}
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/collections/refresh-overdue
+Authorization: Bearer {{AccessToken}}
+
+###
+
 GET {{Circle.WebApi_HostAddress}}/api/loans
 Authorization: Bearer {{AccessToken}}
 Accept: application/json

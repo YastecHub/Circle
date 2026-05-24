@@ -56,4 +56,15 @@ public sealed class LoanRepaymentSchedule : BaseEntity
 
         return amount - amountToApply;
     }
+
+    public bool MarkOverdue(DateOnly today)
+    {
+        if (Status != RepaymentScheduleStatus.Pending || DueDate >= today)
+        {
+            return false;
+        }
+
+        Status = RepaymentScheduleStatus.Overdue;
+        return true;
+    }
 }

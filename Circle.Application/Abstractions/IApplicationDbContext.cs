@@ -6,6 +6,7 @@ namespace Circle.Application.Abstractions;
 public interface IApplicationDbContext
 {
     DbSet<User> Users { get; }
+    DbSet<CollectionActivity> CollectionActivities { get; }
     DbSet<Customer> Customers { get; }
     DbSet<CustomerDocument> CustomerDocuments { get; }
     DbSet<CustomerVirtualAccount> CustomerVirtualAccounts { get; }

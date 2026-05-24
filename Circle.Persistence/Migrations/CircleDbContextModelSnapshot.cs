@@ -69,6 +69,69 @@ namespace Circle.Persistence.Migrations
                     b.ToTable("audit_logs", (string)null);
                 });
 
+            modelBuilder.Entity("Circle.Domain.Entities.CollectionActivity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ActivityType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("LoanId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<Guid>("OfficerUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Outcome")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<decimal?>("PromisedAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateOnly?>("PromisedPaymentDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid?>("RepaymentScheduleId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAtUtc");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("LoanId");
+
+                    b.HasIndex("OfficerUserId");
+
+                    b.HasIndex("PromisedPaymentDate");
+
+                    b.HasIndex("RepaymentScheduleId");
+
+                    b.ToTable("collection_activities", (string)null);
+                });
+
             modelBuilder.Entity("Circle.Domain.Entities.Customer", b =>
                 {
                     b.Property<Guid>("Id")
