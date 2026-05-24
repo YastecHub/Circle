@@ -196,3 +196,26 @@ Accept: application/json
 GET {{Circle.WebApi_HostAddress}}/api/reports/officer-performance
 Authorization: Bearer {{AccessToken}}
 Accept: application/json
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/admin/settings
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+PUT {{Circle.WebApi_HostAddress}}/api/admin/settings/AutoApprovalThreshold
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "value": "20000",
+  "reason": "MVP approval threshold confirmed by client"
+}
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/admin/audit-logs?page=1&pageSize=20
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
