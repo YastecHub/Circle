@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Circle.Application.Administration;
 using Circle.Application.Auth;
+using Circle.Application.CustomerDocuments;
 using Circle.Application.Customers;
 using Circle.Application.Disbursements;
 using Circle.Application.Loans;
@@ -16,6 +17,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ICustomerDocumentService, CustomerDocumentService>();
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IDisbursementService, DisbursementService>();
         services.AddScoped<ILoanService, LoanService>();

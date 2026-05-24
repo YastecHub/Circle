@@ -91,6 +91,22 @@ Content-Type: application/json
 
 ###
 
+GET {{Circle.WebApi_HostAddress}}/api/customers/paste-customer-guid-here/documents
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/customers/paste-customer-guid-here/documents/paste-document-guid-here/download
+Authorization: Bearer {{AccessToken}}
+
+###
+
+DELETE {{Circle.WebApi_HostAddress}}/api/customers/paste-customer-guid-here/documents/paste-document-guid-here
+Authorization: Bearer {{AccessToken}}
+
+###
+
 GET {{Circle.WebApi_HostAddress}}/api/loans
 Authorization: Bearer {{AccessToken}}
 Accept: application/json

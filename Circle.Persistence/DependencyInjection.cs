@@ -26,6 +26,7 @@ public static class DependencyInjection
             provider.GetRequiredService<CircleDbContext>());
 
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+        services.AddSingleton<IFileStorageService, LocalFileStorageService>();
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
         services.AddSingleton<IEmailSender, ConsoleEmailSender>();
 
