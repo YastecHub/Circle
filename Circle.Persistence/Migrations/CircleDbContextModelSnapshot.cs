@@ -318,6 +318,63 @@ namespace Circle.Persistence.Migrations
                     b.ToTable("loans", (string)null);
                 });
 
+            modelBuilder.Entity("Circle.Domain.Entities.LoanDisbursement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("DisbursedByUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateOnly>("DisbursementDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("LoanId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Method")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("Reference")
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("DisbursedByUserId");
+
+                    b.HasIndex("DisbursementDate");
+
+                    b.HasIndex("LoanId")
+                        .IsUnique();
+
+                    b.HasIndex("Reference");
+
+                    b.ToTable("loan_disbursements", (string)null);
+                });
+
             modelBuilder.Entity("Circle.Domain.Entities.LoanRepaymentSchedule", b =>
                 {
                     b.Property<Guid>("Id")

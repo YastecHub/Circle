@@ -77,6 +77,11 @@ public sealed class Loan : BaseEntity
         RejectionReason = reason.Trim();
     }
 
+    public void MarkDisbursed()
+    {
+        Status = LoanStatus.Disbursed;
+    }
+
     public void MarkClosed()
     {
         Status = LoanStatus.Closed;

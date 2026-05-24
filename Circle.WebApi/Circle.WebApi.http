@@ -151,3 +151,24 @@ Content-Type: application/json
   "reference": "CASH-001",
   "notes": "First repayment"
 }
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/disbursements
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/disbursements
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "loanId": "paste-loan-guid-here",
+  "amount": 20000,
+  "disbursementDate": "2026-05-25",
+  "method": "BankTransfer",
+  "reference": "DISB-001",
+  "notes": "Loan principal released"
+}
