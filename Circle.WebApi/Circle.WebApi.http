@@ -55,3 +55,36 @@ Content-Type: application/json
   "branch": "Main"
 }
 
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/customers
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/customers
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "customerCode": null,
+  "passbookReference": null,
+  "fullName": "Amina Bello",
+  "phone": "08000000002",
+  "alternatePhone": null,
+  "address": "12 Market Road",
+  "city": "Lagos",
+  "state": "Lagos",
+  "governmentIdType": "NIN",
+  "governmentIdNumber": "12345678901",
+  "dateOfBirth": "1992-04-18",
+  "gender": "Female",
+  "occupation": "Trader",
+  "guarantorName": "Musa Bello",
+  "guarantorPhone": "08000000003",
+  "guarantorRelationship": "Brother",
+  "guarantorIdNumber": "98765432109",
+  "assignedCreditOfficerId": "paste-credit-officer-guid-here",
+  "notes": "Initial customer record"
+}
