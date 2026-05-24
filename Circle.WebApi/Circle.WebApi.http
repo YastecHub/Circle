@@ -172,3 +172,27 @@ Content-Type: application/json
   "reference": "DISB-001",
   "notes": "Loan principal released"
 }
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/reports/portfolio-summary
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/reports/cashflow?from=2026-05-01&to=2026-05-31
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/reports/overdue-installments
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/reports/officer-performance
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
