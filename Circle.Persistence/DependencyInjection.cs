@@ -10,10 +10,13 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? configuration["MYSQLCONNSTR_DefaultConnection"];
+
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            connectionString = "Server=localhost;Port=3306;Database=circle;User ID=root;Password=your_password;";
+            throw new InvalidOperationException(
+                "Database connection string is missing. Set ConnectionStrings__DefaultConnection in App Settings or MYSQLCONNSTR_DefaultConnection in Azure Connection strings.");
         }
 
         services.AddDbContext<CircleDbContext>(options =>
