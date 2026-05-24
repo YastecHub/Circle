@@ -285,6 +285,95 @@ namespace Circle.Persistence.Migrations
                     b.ToTable("customer_virtual_accounts", (string)null);
                 });
 
+            modelBuilder.Entity("Circle.Domain.Entities.InboundPayment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AppliedAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<Guid?>("LoanId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Narration")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime>("PaidAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("PayerName")
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)");
+
+                    b.Property<string>("ProviderReference")
+                        .HasMaxLength(160)
+                        .HasColumnType("varchar(160)");
+
+                    b.Property<Guid?>("RecordedByUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("RepaymentId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<decimal>("UnappliedAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountNumber");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("LoanId");
+
+                    b.HasIndex("PaidAtUtc");
+
+                    b.HasIndex("ProviderReference");
+
+                    b.HasIndex("RepaymentId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("inbound_payments", (string)null);
+                });
+
             modelBuilder.Entity("Circle.Domain.Entities.Loan", b =>
                 {
                     b.Property<Guid>("Id")

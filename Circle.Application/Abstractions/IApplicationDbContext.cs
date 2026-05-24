@@ -9,6 +9,7 @@ public interface IApplicationDbContext
     DbSet<Customer> Customers { get; }
     DbSet<CustomerDocument> CustomerDocuments { get; }
     DbSet<CustomerVirtualAccount> CustomerVirtualAccounts { get; }
+    DbSet<InboundPayment> InboundPayments { get; }
     DbSet<Loan> Loans { get; }
     DbSet<LoanDisbursement> LoanDisbursements { get; }
     DbSet<LoanRepaymentSchedule> LoanRepaymentSchedules { get; }

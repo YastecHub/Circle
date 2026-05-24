@@ -138,6 +138,27 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 
+GET {{Circle.WebApi_HostAddress}}/api/reconciliation/inbound-payments
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/reconciliation/inbound-payments
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "providerReference": "MNFY-PAY-001",
+  "accountNumber": "1234567890",
+  "amount": 2200,
+  "paidAtUtc": "2026-05-25T09:00:00Z",
+  "payerName": "Amina Bello",
+  "narration": "Virtual account repayment"
+}
+
+###
+
 GET {{Circle.WebApi_HostAddress}}/api/loans
 Authorization: Bearer {{AccessToken}}
 Accept: application/json
