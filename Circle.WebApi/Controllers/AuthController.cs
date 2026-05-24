@@ -13,7 +13,7 @@ public sealed class AuthController(IAuthService authService) : ControllerBase
     public async Task<IActionResult> BootstrapAdmin(BootstrapAdminRequest request, CancellationToken cancellationToken)
     {
         var response = await authService.BootstrapAdminAsync(request, cancellationToken);
-        return CreatedAtAction(nameof(BootstrapAdmin), response);
+        return Ok(response);
     }
 
     [AllowAnonymous]

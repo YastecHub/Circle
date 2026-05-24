@@ -5,6 +5,7 @@ using Circle.Application.Abstractions;
 using Circle.Application.Common.Options;
 using Circle.WebApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -63,6 +64,22 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "Healthy",
+    service = "Circle.WebApi",
+    checkedAtUtc = DateTime.UtcNow
+}));
+
+app.MapGet("/health/database", async (CircleDbContext dbContext, CancellationToken cancellationToken) =>
+{
+    var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
+
+    return canConnect
+        ? Results.Ok(new { status = "Healthy", database = "Connected" })
+        : Results.Problem("The API is running, but it could not connect to the database.");
+});
+
 app.MapControllers();
 
 app.Run();
