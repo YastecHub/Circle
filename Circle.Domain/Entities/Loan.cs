@@ -77,6 +77,11 @@ public sealed class Loan : BaseEntity
         RejectionReason = reason.Trim();
     }
 
+    public void MarkClosed()
+    {
+        Status = LoanStatus.Closed;
+    }
+
     public void AddRepaymentSchedule(LoanRepaymentSchedule repaymentSchedule)
     {
         _repaymentSchedules.Add(repaymentSchedule);

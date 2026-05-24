@@ -10,6 +10,7 @@ public interface IApplicationDbContext
     DbSet<CustomerDocument> CustomerDocuments { get; }
     DbSet<Loan> Loans { get; }
     DbSet<LoanRepaymentSchedule> LoanRepaymentSchedules { get; }
+    DbSet<Repayment> Repayments { get; }
     DbSet<SystemSetting> SystemSettings { get; }
     DbSet<AuditLog> AuditLogs { get; }
     DbSet<UserOtp> UserOtps { get; }

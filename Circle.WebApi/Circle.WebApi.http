@@ -130,3 +130,24 @@ Content-Type: application/json
 {
   "reason": "Customer does not meet current approval rules"
 }
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/repayments
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/repayments
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "loanId": "paste-loan-guid-here",
+  "amount": 2200,
+  "paymentDate": "2026-05-25",
+  "method": "Cash",
+  "reference": "CASH-001",
+  "notes": "First repayment"
+}

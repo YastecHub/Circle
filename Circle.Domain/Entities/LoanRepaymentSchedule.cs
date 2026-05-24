@@ -33,13 +33,27 @@ public sealed class LoanRepaymentSchedule : BaseEntity
     public decimal InterestAmount { get; private set; }
     public decimal TotalAmount { get; private set; }
     public decimal AmountPaid { get; private set; }
+    public decimal OutstandingAmount => TotalAmount - AmountPaid;
     public RepaymentScheduleStatus Status { get; private set; }
     public DateTime? PaidAtUtc { get; private set; }
 
-    public void MarkPaid(decimal amountPaid, DateTime paidAtUtc)
+    public decimal ApplyPayment(decimal amount, DateTime paidAtUtc)
     {
-        AmountPaid = amountPaid;
-        PaidAtUtc = paidAtUtc;
-        Status = amountPaid >= TotalAmount ? RepaymentScheduleStatus.Paid : RepaymentScheduleStatus.Pending;
+        if (amount <= 0 || Status == RepaymentScheduleStatus.Paid)
+        {
+            return amount;
+        }
+
+        var amountToApply = Math.Min(amount, OutstandingAmount);
+        AmountPaid += amountToApply;
+
+        if (AmountPaid >= TotalAmount)
+        {
+            AmountPaid = TotalAmount;
+            PaidAtUtc = paidAtUtc;
+            Status = RepaymentScheduleStatus.Paid;
+        }
+
+        return amount - amountToApply;
     }
 }
