@@ -88,3 +88,45 @@ Content-Type: application/json
   "assignedCreditOfficerId": "paste-credit-officer-guid-here",
   "notes": "Initial customer record"
 }
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/loans
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/loans
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "customerId": "paste-customer-guid-here",
+  "principalAmount": 20000,
+  "interestRatePercent": 10,
+  "termCount": 10,
+  "repaymentFrequency": "Daily",
+  "firstRepaymentDate": "2026-05-25",
+  "purpose": "Working capital"
+}
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/loans/paste-loan-guid-here/approve
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "note": "Approved by business owner"
+}
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/loans/paste-loan-guid-here/reject
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "reason": "Customer does not meet current approval rules"
+}

@@ -8,6 +8,8 @@ public interface IApplicationDbContext
     DbSet<User> Users { get; }
     DbSet<Customer> Customers { get; }
     DbSet<CustomerDocument> CustomerDocuments { get; }
+    DbSet<Loan> Loans { get; }
+    DbSet<LoanRepaymentSchedule> LoanRepaymentSchedules { get; }
     DbSet<SystemSetting> SystemSettings { get; }
     DbSet<AuditLog> AuditLogs { get; }
     DbSet<UserOtp> UserOtps { get; }
