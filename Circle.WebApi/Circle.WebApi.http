@@ -107,6 +107,37 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 
+GET {{Circle.WebApi_HostAddress}}/api/virtual-accounts
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/customers/paste-customer-guid-here/virtual-account
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/customers/paste-customer-guid-here/virtual-account
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "accountName": "Amina Bello",
+  "accountNumber": "1234567890",
+  "bankName": "Moniepoint MFB",
+  "bankCode": "50515",
+  "providerReference": "monnify-reference"
+}
+
+###
+
+POST {{Circle.WebApi_HostAddress}}/api/customers/paste-customer-guid-here/virtual-account/deactivate
+Authorization: Bearer {{AccessToken}}
+
+###
+
 GET {{Circle.WebApi_HostAddress}}/api/loans
 Authorization: Bearer {{AccessToken}}
 Accept: application/json

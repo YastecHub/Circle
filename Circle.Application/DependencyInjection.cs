@@ -8,6 +8,7 @@ using Circle.Application.Loans;
 using Circle.Application.Repayments;
 using Circle.Application.Reports;
 using Circle.Application.Users;
+using Circle.Application.VirtualAccounts;
 
 namespace Circle.Application;
 
@@ -24,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<IRepaymentService, RepaymentService>();
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IUserManagementService, UserManagementService>();
+        services.AddScoped<IVirtualAccountService, VirtualAccountService>();
 
         return services;
     }

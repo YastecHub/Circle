@@ -11,6 +11,7 @@ public sealed class CircleDbContext(DbContextOptions<CircleDbContext> options, I
     public DbSet<User> Users => Set<User>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<CustomerDocument> CustomerDocuments => Set<CustomerDocument>();
+    public DbSet<CustomerVirtualAccount> CustomerVirtualAccounts => Set<CustomerVirtualAccount>();
     public DbSet<Loan> Loans => Set<Loan>();
     public DbSet<LoanDisbursement> LoanDisbursements => Set<LoanDisbursement>();
     public DbSet<LoanRepaymentSchedule> LoanRepaymentSchedules => Set<LoanRepaymentSchedule>();
