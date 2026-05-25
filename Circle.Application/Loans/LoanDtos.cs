@@ -50,6 +50,60 @@ public sealed record LoanRepaymentScheduleResponse(
     RepaymentScheduleStatus Status,
     DateTime? PaidAtUtc);
 
+public sealed record LoanStatementResponse(
+    Guid LoanId,
+    string LoanCode,
+    Guid CustomerId,
+    string CustomerCode,
+    string CustomerName,
+    LoanStatus Status,
+    decimal PrincipalAmount,
+    decimal InterestAmount,
+    decimal TotalRepayable,
+    decimal TotalDisbursed,
+    decimal TotalPaid,
+    decimal OutstandingBalance,
+    decimal OverdueBalance,
+    DateOnly? NextDueDate,
+    decimal? NextDueAmount,
+    DateOnly? LastPaymentDate,
+    IReadOnlyCollection<LoanStatementScheduleLine> RepaymentSchedules,
+    IReadOnlyCollection<LoanStatementRepaymentLine> Repayments,
+    IReadOnlyCollection<LoanStatementDisbursementLine> Disbursements);
+
+public sealed record LoanStatementScheduleLine(
+    Guid Id,
+    int InstallmentNumber,
+    DateOnly DueDate,
+    decimal PrincipalAmount,
+    decimal InterestAmount,
+    decimal TotalAmount,
+    decimal AmountPaid,
+    decimal OutstandingAmount,
+    RepaymentScheduleStatus Status,
+    bool IsOverdue,
+    DateTime? PaidAtUtc);
+
+public sealed record LoanStatementRepaymentLine(
+    Guid Id,
+    decimal Amount,
+    DateOnly PaymentDate,
+    RepaymentMethod Method,
+    string? Reference,
+    Guid? RecordedByUserId,
+    string? Notes,
+    DateTime CreatedAtUtc);
+
+public sealed record LoanStatementDisbursementLine(
+    Guid Id,
+    decimal Amount,
+    DateOnly DisbursementDate,
+    DisbursementMethod Method,
+    string? Reference,
+    Guid DisbursedByUserId,
+    string? Notes,
+    DateTime CreatedAtUtc);
+
 public sealed record LoanListResponse(
     IReadOnlyCollection<LoanResponse> Items,
     int Page,

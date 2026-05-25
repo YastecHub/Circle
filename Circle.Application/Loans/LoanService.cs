@@ -64,6 +64,100 @@ public sealed class LoanService(
         return ToResponse(loan);
     }
 
+    public async Task<LoanStatementResponse> GetLoanStatementAsync(Guid loanId, CancellationToken cancellationToken = default)
+    {
+        var currentUser = await GetCurrentUserAsync(cancellationToken);
+        var loan = await ApplyLoanScope(dbContext.Loans.AsNoTracking().Include(candidate => candidate.RepaymentSchedules), currentUser)
+            .SingleOrDefaultAsync(candidate => candidate.Id == loanId, cancellationToken)
+            ?? throw new AppException("Loan was not found.");
+
+        var customer = await dbContext.Customers
+            .AsNoTracking()
+            .SingleOrDefaultAsync(candidate => candidate.Id == loan.CustomerId, cancellationToken)
+            ?? throw new AppException("Customer was not found.");
+
+        var repayments = await dbContext.Repayments
+            .AsNoTracking()
+            .Where(repayment => repayment.LoanId == loan.Id)
+            .OrderBy(repayment => repayment.PaymentDate)
+            .ThenBy(repayment => repayment.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+
+        var disbursements = await dbContext.LoanDisbursements
+            .AsNoTracking()
+            .Where(disbursement => disbursement.LoanId == loan.Id)
+            .OrderBy(disbursement => disbursement.DisbursementDate)
+            .ThenBy(disbursement => disbursement.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+
+        var today = DateOnly.FromDateTime(dateTimeProvider.UtcNow);
+        var scheduleLines = loan.RepaymentSchedules
+            .OrderBy(schedule => schedule.InstallmentNumber)
+            .Select(schedule =>
+            {
+                var isOverdue = schedule.Status != RepaymentScheduleStatus.Paid && schedule.DueDate < today;
+                return new LoanStatementScheduleLine(
+                    schedule.Id,
+                    schedule.InstallmentNumber,
+                    schedule.DueDate,
+                    schedule.PrincipalAmount,
+                    schedule.InterestAmount,
+                    schedule.TotalAmount,
+                    schedule.AmountPaid,
+                    schedule.OutstandingAmount,
+                    schedule.Status,
+                    isOverdue,
+                    schedule.PaidAtUtc);
+            })
+            .ToList();
+
+        var nextDueSchedule = scheduleLines
+            .Where(schedule => schedule.OutstandingAmount > 0)
+            .OrderBy(schedule => schedule.DueDate)
+            .ThenBy(schedule => schedule.InstallmentNumber)
+            .FirstOrDefault();
+
+        var totalPaid = repayments.Sum(repayment => repayment.Amount);
+        var outstandingBalance = Math.Max(loan.TotalRepayable - totalPaid, 0);
+
+        return new LoanStatementResponse(
+            loan.Id,
+            loan.LoanCode,
+            customer.Id,
+            customer.CustomerCode,
+            customer.FullName,
+            loan.Status,
+            loan.PrincipalAmount,
+            loan.InterestAmount,
+            loan.TotalRepayable,
+            disbursements.Sum(disbursement => disbursement.Amount),
+            totalPaid,
+            outstandingBalance,
+            scheduleLines.Where(schedule => schedule.IsOverdue).Sum(schedule => schedule.OutstandingAmount),
+            nextDueSchedule?.DueDate,
+            nextDueSchedule?.OutstandingAmount,
+            repayments.OrderByDescending(repayment => repayment.PaymentDate).FirstOrDefault()?.PaymentDate,
+            scheduleLines,
+            repayments.Select(repayment => new LoanStatementRepaymentLine(
+                repayment.Id,
+                repayment.Amount,
+                repayment.PaymentDate,
+                repayment.Method,
+                repayment.Reference,
+                repayment.RecordedByUserId,
+                repayment.Notes,
+                repayment.CreatedAtUtc)).ToList(),
+            disbursements.Select(disbursement => new LoanStatementDisbursementLine(
+                disbursement.Id,
+                disbursement.Amount,
+                disbursement.DisbursementDate,
+                disbursement.Method,
+                disbursement.Reference,
+                disbursement.DisbursedByUserId,
+                disbursement.Notes,
+                disbursement.CreatedAtUtc)).ToList());
+    }
+
     public async Task<LoanResponse> CreateLoanAsync(CreateLoanRequest request, CancellationToken cancellationToken = default)
     {
         ValidateCreateLoanRequest(request);

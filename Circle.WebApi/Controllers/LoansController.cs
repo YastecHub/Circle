@@ -28,6 +28,12 @@ public sealed class LoansController(ILoanService loanService) : ControllerBase
         return Ok(await loanService.GetLoanAsync(loanId, cancellationToken));
     }
 
+    [HttpGet("{loanId:guid}/statement")]
+    public async Task<IActionResult> GetLoanStatement(Guid loanId, CancellationToken cancellationToken)
+    {
+        return Ok(await loanService.GetLoanStatementAsync(loanId, cancellationToken));
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateLoan(CreateLoanRequest request, CancellationToken cancellationToken)
     {
