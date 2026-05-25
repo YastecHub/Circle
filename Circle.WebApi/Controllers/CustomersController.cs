@@ -28,6 +28,12 @@ public sealed class CustomersController(ICustomerService customerService) : Cont
         return Ok(await customerService.GetCustomerAsync(customerId, cancellationToken));
     }
 
+    [HttpGet("{customerId:guid}/statement")]
+    public async Task<IActionResult> GetCustomerStatement(Guid customerId, CancellationToken cancellationToken)
+    {
+        return Ok(await customerService.GetCustomerStatementAsync(customerId, cancellationToken));
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateCustomer(CreateCustomerRequest request, CancellationToken cancellationToken)
     {

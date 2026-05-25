@@ -14,6 +14,8 @@ public interface ICustomerService
 
     Task<CustomerResponse> GetCustomerAsync(Guid customerId, CancellationToken cancellationToken = default);
 
+    Task<CustomerStatementResponse> GetCustomerStatementAsync(Guid customerId, CancellationToken cancellationToken = default);
+
     Task<CustomerResponse> CreateCustomerAsync(CreateCustomerRequest request, CancellationToken cancellationToken = default);
 
     Task<CustomerResponse> UpdateCustomerAsync(Guid customerId, UpdateCustomerRequest request, CancellationToken cancellationToken = default);

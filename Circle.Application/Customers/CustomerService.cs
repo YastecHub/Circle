@@ -8,7 +8,8 @@ namespace Circle.Application.Customers;
 
 public sealed class CustomerService(
     IApplicationDbContext dbContext,
-    ICurrentUserService currentUserService) : ICustomerService
+    ICurrentUserService currentUserService,
+    IDateTimeProvider dateTimeProvider) : ICustomerService
 {
     private const int MaximumPageSize = 100;
 
@@ -65,6 +66,120 @@ public sealed class CustomerService(
             ?? throw new AppException("Customer was not found.");
 
         return ToResponse(customer);
+    }
+
+    public async Task<CustomerStatementResponse> GetCustomerStatementAsync(Guid customerId, CancellationToken cancellationToken = default)
+    {
+        var currentUser = await GetCurrentUserAsync(cancellationToken);
+        var customer = await ApplyCustomerScope(dbContext.Customers.AsNoTracking(), currentUser)
+            .SingleOrDefaultAsync(candidate => candidate.Id == customerId, cancellationToken)
+            ?? throw new AppException("Customer was not found.");
+
+        var loans = await dbContext.Loans
+            .AsNoTracking()
+            .Include(loan => loan.RepaymentSchedules)
+            .Where(loan => loan.CustomerId == customer.Id)
+            .OrderByDescending(loan => loan.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+
+        var repayments = await dbContext.Repayments
+            .AsNoTracking()
+            .Where(repayment => repayment.CustomerId == customer.Id)
+            .OrderByDescending(repayment => repayment.PaymentDate)
+            .ThenByDescending(repayment => repayment.CreatedAtUtc)
+            .Take(20)
+            .ToListAsync(cancellationToken);
+
+        var totalPaidByLoan = await dbContext.Repayments
+            .AsNoTracking()
+            .Where(repayment => repayment.CustomerId == customer.Id)
+            .GroupBy(repayment => repayment.LoanId)
+            .Select(group => new { LoanId = group.Key, TotalPaid = group.Sum(repayment => repayment.Amount) })
+            .ToDictionaryAsync(item => item.LoanId, item => item.TotalPaid, cancellationToken);
+
+        var totalDisbursed = await dbContext.LoanDisbursements
+            .AsNoTracking()
+            .Where(disbursement => disbursement.CustomerId == customer.Id)
+            .SumAsync(disbursement => disbursement.Amount, cancellationToken);
+
+        var activeVirtualAccount = await dbContext.CustomerVirtualAccounts
+            .AsNoTracking()
+            .Where(account => account.CustomerId == customer.Id && account.Status == VirtualAccountStatus.Active)
+            .OrderByDescending(account => account.CreatedAtUtc)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        var collectionActivities = await dbContext.CollectionActivities
+            .AsNoTracking()
+            .Where(activity => activity.CustomerId == customer.Id)
+            .OrderByDescending(activity => activity.CreatedAtUtc)
+            .Take(20)
+            .ToListAsync(cancellationToken);
+
+        var documents = await dbContext.CustomerDocuments
+            .AsNoTracking()
+            .Where(document => document.CustomerId == customer.Id)
+            .OrderByDescending(document => document.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+
+        var today = DateOnly.FromDateTime(dateTimeProvider.UtcNow);
+        var loanLines = loans.Select(loan => ToStatementLoanLine(loan, totalPaidByLoan.GetValueOrDefault(loan.Id), today)).ToList();
+        var nextDueLoan = loanLines
+            .Where(loan => loan.NextDueDate is not null)
+            .OrderBy(loan => loan.NextDueDate)
+            .FirstOrDefault();
+
+        var summary = new CustomerStatementSummary(
+            loans.Count,
+            loans.Count(loan => loan.Status is LoanStatus.Approved or LoanStatus.Disbursed),
+            loans.Sum(loan => loan.PrincipalAmount),
+            loans.Sum(loan => loan.TotalRepayable),
+            totalDisbursed,
+            totalPaidByLoan.Values.Sum(),
+            loanLines.Sum(loan => loan.OutstandingBalance),
+            loanLines.Sum(loan => loan.OverdueBalance),
+            nextDueLoan?.NextDueDate,
+            nextDueLoan?.NextDueAmount);
+
+        return new CustomerStatementResponse(
+            ToResponse(customer),
+            summary,
+            activeVirtualAccount is null ? null : new CustomerStatementVirtualAccount(
+                activeVirtualAccount.Id,
+                activeVirtualAccount.Provider,
+                activeVirtualAccount.AccountName,
+                activeVirtualAccount.AccountNumber,
+                activeVirtualAccount.BankName,
+                activeVirtualAccount.BankCode,
+                activeVirtualAccount.ProviderReference,
+                activeVirtualAccount.Status),
+            loanLines,
+            repayments.Select(repayment => new CustomerStatementRepaymentLine(
+                repayment.Id,
+                repayment.LoanId,
+                repayment.Amount,
+                repayment.PaymentDate,
+                repayment.Method,
+                repayment.Reference,
+                repayment.Notes,
+                repayment.CreatedAtUtc)).ToList(),
+            collectionActivities.Select(activity => new CustomerStatementCollectionLine(
+                activity.Id,
+                activity.LoanId,
+                activity.RepaymentScheduleId,
+                activity.OfficerUserId,
+                activity.ActivityType,
+                activity.Outcome,
+                activity.PromisedPaymentDate,
+                activity.PromisedAmount,
+                activity.Notes,
+                activity.CreatedAtUtc)).ToList(),
+            documents.Select(document => new CustomerStatementDocumentLine(
+                document.Id,
+                document.DocumentType,
+                document.FileName,
+                document.ContentType,
+                document.UploadedByUserId,
+                document.CreatedAtUtc)).ToList());
     }
 
     public async Task<CustomerResponse> CreateCustomerAsync(CreateCustomerRequest request, CancellationToken cancellationToken = default)
@@ -291,5 +406,32 @@ public sealed class CustomerService(
             customer.Notes,
             customer.CreatedAtUtc,
             customer.UpdatedAtUtc);
+    }
+
+    private static CustomerStatementLoanLine ToStatementLoanLine(Loan loan, decimal totalPaid, DateOnly today)
+    {
+        var outstandingBalance = loan.RepaymentSchedules.Sum(schedule => schedule.OutstandingAmount);
+        var overdueBalance = loan.RepaymentSchedules
+            .Where(schedule => schedule.Status != RepaymentScheduleStatus.Paid && schedule.DueDate < today)
+            .Sum(schedule => schedule.OutstandingAmount);
+        var nextDueSchedule = loan.RepaymentSchedules
+            .Where(schedule => schedule.OutstandingAmount > 0)
+            .OrderBy(schedule => schedule.DueDate)
+            .ThenBy(schedule => schedule.InstallmentNumber)
+            .FirstOrDefault();
+
+        return new CustomerStatementLoanLine(
+            loan.Id,
+            loan.LoanCode,
+            loan.Status,
+            loan.PrincipalAmount,
+            loan.TotalRepayable,
+            totalPaid,
+            outstandingBalance,
+            overdueBalance,
+            loan.StartDate,
+            loan.MaturityDate,
+            nextDueSchedule?.DueDate,
+            nextDueSchedule?.OutstandingAmount);
     }
 }
