@@ -30,6 +30,12 @@ public sealed class ReportsController(IReportService reportService) : Controller
         return Ok(await reportService.GetOverdueInstallmentsAsync(cancellationToken));
     }
 
+    [HttpGet("arrears-aging")]
+    public async Task<IActionResult> GetArrearsAging(CancellationToken cancellationToken)
+    {
+        return Ok(await reportService.GetArrearsAgingAsync(cancellationToken));
+    }
+
     [HttpGet("officer-performance")]
     public async Task<IActionResult> GetOfficerPerformance(CancellationToken cancellationToken)
     {

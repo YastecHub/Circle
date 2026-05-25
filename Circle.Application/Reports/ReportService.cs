@@ -125,6 +125,92 @@ public sealed class ReportService(
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<ArrearsAgingResponse> GetArrearsAgingAsync(CancellationToken cancellationToken = default)
+    {
+        var currentUser = await GetCurrentUserAsync(cancellationToken);
+        var today = DateOnly.FromDateTime(dateTimeProvider.UtcNow);
+
+        var overdueItems = await (
+            from schedule in ApplyScheduleScope(dbContext.LoanRepaymentSchedules.AsNoTracking(), currentUser)
+            join loan in ApplyLoanScope(dbContext.Loans.AsNoTracking(), currentUser) on schedule.LoanId equals loan.Id
+            join customer in ApplyCustomerScope(dbContext.Customers.AsNoTracking(), currentUser) on loan.CustomerId equals customer.Id
+            join officer in dbContext.Users.AsNoTracking() on customer.AssignedCreditOfficerId equals officer.Id
+            where schedule.Status != RepaymentScheduleStatus.Paid && schedule.DueDate < today
+            select new
+            {
+                loan.Id,
+                loan.LoanCode,
+                CustomerId = customer.Id,
+                CustomerName = customer.FullName,
+                CustomerPhone = customer.Phone,
+                customer.AssignedCreditOfficerId,
+                AssignedCreditOfficerName = officer.FullName,
+                schedule.InstallmentNumber,
+                schedule.DueDate,
+                schedule.TotalAmount,
+                schedule.AmountPaid,
+                schedule.Status
+            })
+            .ToListAsync(cancellationToken);
+
+        var items = overdueItems
+            .Select(item => new ArrearsAgingItemResponse(
+                item.Id,
+                item.LoanCode,
+                item.CustomerId,
+                item.CustomerName,
+                item.CustomerPhone,
+                item.AssignedCreditOfficerId,
+                item.AssignedCreditOfficerName,
+                item.InstallmentNumber,
+                item.DueDate,
+                today.DayNumber - item.DueDate.DayNumber,
+                item.TotalAmount,
+                item.AmountPaid,
+                item.TotalAmount - item.AmountPaid,
+                item.Status))
+            .OrderByDescending(item => item.DaysOverdue)
+            .ThenBy(item => item.CustomerName)
+            .ToList();
+
+        var bucketDefinitions = new[]
+        {
+            new AgingBucketDefinition("1-7 days", 1, 7),
+            new AgingBucketDefinition("8-14 days", 8, 14),
+            new AgingBucketDefinition("15-30 days", 15, 30),
+            new AgingBucketDefinition("31+ days", 31, null)
+        };
+
+        var buckets = bucketDefinitions
+            .Select(definition =>
+            {
+                var bucketItems = items
+                    .Where(item => item.DaysOverdue >= definition.MinimumDays &&
+                                   (definition.MaximumDays is null || item.DaysOverdue <= definition.MaximumDays))
+                    .ToList();
+
+                return new ArrearsAgingBucketResponse(
+                    definition.Label,
+                    definition.MinimumDays,
+                    definition.MaximumDays,
+                    bucketItems.Count,
+                    bucketItems.Select(item => item.CustomerId).Distinct().Count(),
+                    bucketItems.Select(item => item.LoanId).Distinct().Count(),
+                    bucketItems.Sum(item => item.OutstandingAmount),
+                    bucketItems.Count == 0 ? 0 : bucketItems.Max(item => item.DaysOverdue),
+                    bucketItems);
+            })
+            .ToList();
+
+        return new ArrearsAgingResponse(
+            today,
+            items.Count,
+            items.Select(item => item.CustomerId).Distinct().Count(),
+            items.Select(item => item.LoanId).Distinct().Count(),
+            items.Sum(item => item.OutstandingAmount),
+            buckets);
+    }
+
     public async Task<IReadOnlyCollection<OfficerPerformanceResponse>> GetOfficerPerformanceAsync(CancellationToken cancellationToken = default)
     {
         var currentUser = await GetCurrentUserAsync(cancellationToken);
@@ -242,4 +328,6 @@ public sealed class ReportService(
             customer.Id == repayment.CustomerId &&
             customer.AssignedCreditOfficerId == currentUser.Id));
     }
+
+    private sealed record AgingBucketDefinition(string Label, int MinimumDays, int? MaximumDays);
 }

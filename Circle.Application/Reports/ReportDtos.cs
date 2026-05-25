@@ -45,6 +45,41 @@ public sealed record OverdueInstallmentResponse(
     decimal OutstandingAmount,
     RepaymentScheduleStatus Status);
 
+public sealed record ArrearsAgingResponse(
+    DateOnly AsOfDate,
+    int TotalOverdueInstallments,
+    int TotalOverdueCustomers,
+    int TotalOverdueLoans,
+    decimal TotalOverdueAmount,
+    IReadOnlyCollection<ArrearsAgingBucketResponse> Buckets);
+
+public sealed record ArrearsAgingBucketResponse(
+    string Bucket,
+    int MinimumDaysOverdue,
+    int? MaximumDaysOverdue,
+    int OverdueInstallments,
+    int OverdueCustomers,
+    int OverdueLoans,
+    decimal OverdueAmount,
+    int OldestDaysOverdue,
+    IReadOnlyCollection<ArrearsAgingItemResponse> Items);
+
+public sealed record ArrearsAgingItemResponse(
+    Guid LoanId,
+    string LoanCode,
+    Guid CustomerId,
+    string CustomerName,
+    string CustomerPhone,
+    Guid AssignedCreditOfficerId,
+    string AssignedCreditOfficerName,
+    int InstallmentNumber,
+    DateOnly DueDate,
+    int DaysOverdue,
+    decimal TotalAmount,
+    decimal AmountPaid,
+    decimal OutstandingAmount,
+    RepaymentScheduleStatus Status);
+
 public sealed record OfficerPerformanceResponse(
     Guid OfficerId,
     string OfficerName,

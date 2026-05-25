@@ -331,6 +331,12 @@ Accept: application/json
 
 ###
 
+GET {{Circle.WebApi_HostAddress}}/api/reports/arrears-aging
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
 GET {{Circle.WebApi_HostAddress}}/api/reports/officer-performance
 Authorization: Bearer {{AccessToken}}
 Accept: application/json

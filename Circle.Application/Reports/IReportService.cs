@@ -8,5 +8,7 @@ public interface IReportService
 
     Task<IReadOnlyCollection<OverdueInstallmentResponse>> GetOverdueInstallmentsAsync(CancellationToken cancellationToken = default);
 
+    Task<ArrearsAgingResponse> GetArrearsAgingAsync(CancellationToken cancellationToken = default);
+
     Task<IReadOnlyCollection<OfficerPerformanceResponse>> GetOfficerPerformanceAsync(CancellationToken cancellationToken = default);
 }
