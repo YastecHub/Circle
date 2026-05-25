@@ -159,6 +159,36 @@ Content-Type: application/json
 
 ###
 
+POST {{Circle.WebApi_HostAddress}}/api/webhooks/monnify
+Content-Type: application/json
+
+{
+  "eventType": "SUCCESSFUL_TRANSACTION",
+  "eventData": {
+    "transactionReference": "MNFY-WEBHOOK-001",
+    "paymentReference": "MNFY-WEBHOOK-001",
+    "amountPaid": 2200,
+    "paidOn": "2026-05-25T09:00:00Z",
+    "paymentStatus": "PAID",
+    "paymentDescription": "Virtual account repayment",
+    "accountDetails": {
+      "accountNumber": "1234567890",
+      "accountName": "Amina Bello"
+    },
+    "customer": {
+      "name": "Amina Bello"
+    }
+  }
+}
+
+###
+
+GET {{Circle.WebApi_HostAddress}}/api/webhooks/monnify/events
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
 GET {{Circle.WebApi_HostAddress}}/api/collections/activities
 Authorization: Bearer {{AccessToken}}
 Accept: application/json

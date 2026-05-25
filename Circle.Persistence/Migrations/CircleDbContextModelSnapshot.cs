@@ -648,6 +648,65 @@ namespace Circle.Persistence.Migrations
                     b.ToTable("loan_repayment_schedules", (string)null);
                 });
 
+            modelBuilder.Entity("Circle.Domain.Entities.PaymentWebhookEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("EventReference")
+                        .HasMaxLength(180)
+                        .HasColumnType("varchar(180)");
+
+                    b.Property<string>("EventType")
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)");
+
+                    b.Property<Guid?>("InboundPaymentId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("PayloadJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ProcessingMessage")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAtUtc");
+
+                    b.HasIndex("EventReference");
+
+                    b.HasIndex("InboundPaymentId");
+
+                    b.HasIndex("Provider");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("payment_webhook_events", (string)null);
+                });
+
             modelBuilder.Entity("Circle.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -722,7 +781,7 @@ namespace Circle.Persistence.Migrations
                     b.Property<DateOnly>("PaymentDate")
                         .HasColumnType("date");
 
-                    b.Property<Guid>("RecordedByUserId")
+                    b.Property<Guid?>("RecordedByUserId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Reference")

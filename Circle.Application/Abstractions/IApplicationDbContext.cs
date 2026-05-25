@@ -14,6 +14,7 @@ public interface IApplicationDbContext
     DbSet<Loan> Loans { get; }
     DbSet<LoanDisbursement> LoanDisbursements { get; }
     DbSet<LoanRepaymentSchedule> LoanRepaymentSchedules { get; }
+    DbSet<PaymentWebhookEvent> PaymentWebhookEvents { get; }
     DbSet<Repayment> Repayments { get; }
     DbSet<SystemSetting> SystemSettings { get; }
     DbSet<AuditLog> AuditLogs { get; }

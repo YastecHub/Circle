@@ -11,6 +11,7 @@ using Circle.Application.Repayments;
 using Circle.Application.Reports;
 using Circle.Application.Users;
 using Circle.Application.VirtualAccounts;
+using Circle.Application.Webhooks;
 
 namespace Circle.Application;
 
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IUserManagementService, UserManagementService>();
         services.AddScoped<IVirtualAccountService, VirtualAccountService>();
+        services.AddScoped<IPaymentWebhookService, PaymentWebhookService>();
 
         return services;
     }

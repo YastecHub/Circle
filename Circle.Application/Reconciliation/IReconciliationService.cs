@@ -13,4 +13,9 @@ public interface IReconciliationService
         CancellationToken cancellationToken = default);
 
     Task<InboundPaymentResponse> RecordInboundPaymentAsync(RecordInboundPaymentRequest request, CancellationToken cancellationToken = default);
+
+    Task<InboundPaymentResponse> RecordSystemInboundPaymentAsync(
+        RecordInboundPaymentRequest request,
+        string source,
+        CancellationToken cancellationToken = default);
 }

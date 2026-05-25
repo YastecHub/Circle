@@ -17,6 +17,7 @@ public sealed class CircleDbContext(DbContextOptions<CircleDbContext> options, I
     public DbSet<Loan> Loans => Set<Loan>();
     public DbSet<LoanDisbursement> LoanDisbursements => Set<LoanDisbursement>();
     public DbSet<LoanRepaymentSchedule> LoanRepaymentSchedules => Set<LoanRepaymentSchedule>();
+    public DbSet<PaymentWebhookEvent> PaymentWebhookEvents => Set<PaymentWebhookEvent>();
     public DbSet<Repayment> Repayments => Set<Repayment>();
     public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();

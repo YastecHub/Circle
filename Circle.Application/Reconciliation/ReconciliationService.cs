@@ -65,6 +65,26 @@ public sealed class ReconciliationService(
         ValidateRequest(request);
 
         var currentUser = await RequireAdminAsync(cancellationToken);
+        return await RecordInboundPaymentInternalAsync(request, currentUser.Id, currentUserService.IpAddress, "Manual", cancellationToken);
+    }
+
+    public async Task<InboundPaymentResponse> RecordSystemInboundPaymentAsync(
+        RecordInboundPaymentRequest request,
+        string source,
+        CancellationToken cancellationToken = default)
+    {
+        ValidateRequest(request);
+
+        return await RecordInboundPaymentInternalAsync(request, null, null, source, cancellationToken);
+    }
+
+    private async Task<InboundPaymentResponse> RecordInboundPaymentInternalAsync(
+        RecordInboundPaymentRequest request,
+        Guid? recordedByUserId,
+        string? ipAddress,
+        string source,
+        CancellationToken cancellationToken)
+    {
         var provider = await GetConfiguredProviderAsync(cancellationToken);
         var inboundPayment = new InboundPayment(
             provider,
@@ -74,7 +94,7 @@ public sealed class ReconciliationService(
             request.PaidAtUtc,
             request.PayerName,
             request.Narration,
-            currentUser.Id);
+            recordedByUserId);
 
         if (!string.IsNullOrWhiteSpace(inboundPayment.ProviderReference) &&
             await dbContext.InboundPayments.AnyAsync(payment => payment.Provider == provider && payment.ProviderReference == inboundPayment.ProviderReference, cancellationToken))
@@ -141,7 +161,7 @@ public sealed class ReconciliationService(
             DateOnly.FromDateTime(request.PaidAtUtc),
             RepaymentMethod.Monnify,
             inboundPayment.ProviderReference,
-            currentUser.Id,
+            recordedByUserId,
             "Applied from inbound virtual account payment.");
 
         dbContext.Repayments.Add(repayment);
@@ -149,7 +169,7 @@ public sealed class ReconciliationService(
         await dbContext.SaveChangesAsync(cancellationToken);
 
         inboundPayment.Apply(loan.CustomerId, loan.Id, repayment.Id, appliedAmount);
-        dbContext.AuditLogs.Add(new AuditLog(currentUser.Id, "ReconcileInboundPayment", $"Loan:{loan.LoanCode}", null, appliedAmount.ToString("F2"), currentUserService.IpAddress, provider));
+        dbContext.AuditLogs.Add(new AuditLog(recordedByUserId, "ReconcileInboundPayment", $"Loan:{loan.LoanCode}", null, appliedAmount.ToString("F2"), ipAddress, source));
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return ToResponse(inboundPayment);

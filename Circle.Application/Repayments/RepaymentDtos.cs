@@ -18,7 +18,7 @@ public sealed record RepaymentResponse(
     DateOnly PaymentDate,
     RepaymentMethod Method,
     string? Reference,
-    Guid RecordedByUserId,
+    Guid? RecordedByUserId,
     string? Notes,
     DateTime CreatedAtUtc);
 

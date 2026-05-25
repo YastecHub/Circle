@@ -16,7 +16,7 @@ public sealed class Repayment : BaseEntity
         DateOnly paymentDate,
         RepaymentMethod method,
         string? reference,
-        Guid recordedByUserId,
+        Guid? recordedByUserId,
         string? notes)
     {
         LoanId = loanId;
@@ -35,6 +35,6 @@ public sealed class Repayment : BaseEntity
     public DateOnly PaymentDate { get; private set; }
     public RepaymentMethod Method { get; private set; }
     public string? Reference { get; private set; }
-    public Guid RecordedByUserId { get; private set; }
+    public Guid? RecordedByUserId { get; private set; }
     public string? Notes { get; private set; }
 }
