@@ -10,6 +10,7 @@ using Circle.Application.Loans;
 using Circle.Application.Reconciliation;
 using Circle.Application.Repayments;
 using Circle.Application.Reports;
+using Circle.Application.Search;
 using Circle.Application.Users;
 using Circle.Application.VirtualAccounts;
 using Circle.Application.Webhooks;
@@ -31,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IReconciliationService, ReconciliationService>();
         services.AddScoped<IRepaymentService, RepaymentService>();
         services.AddScoped<IReportService, ReportService>();
+        services.AddScoped<IGlobalSearchService, GlobalSearchService>();
         services.AddScoped<IUserManagementService, UserManagementService>();
         services.AddScoped<IVirtualAccountService, VirtualAccountService>();
         services.AddScoped<IPaymentWebhookService, PaymentWebhookService>();
