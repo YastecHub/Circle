@@ -47,6 +47,13 @@ public sealed class CustomersController(ICustomerService customerService) : Cont
         return Ok(await customerService.UpdateCustomerAsync(customerId, request, cancellationToken));
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpPost("{customerId:guid}/reassign")]
+    public async Task<IActionResult> ReassignCustomer(Guid customerId, ReassignCustomerRequest request, CancellationToken cancellationToken)
+    {
+        return Ok(await customerService.ReassignCustomerAsync(customerId, request, cancellationToken));
+    }
+
     [HttpPost("{customerId:guid}/archive")]
     public async Task<IActionResult> ArchiveCustomer(Guid customerId, CancellationToken cancellationToken)
     {

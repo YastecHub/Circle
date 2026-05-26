@@ -81,6 +81,17 @@ Accept: application/json
 
 ###
 
+POST {{Circle.WebApi_HostAddress}}/api/customers/paste-customer-guid-here/reassign
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+{
+  "assignedCreditOfficerId": "paste-new-credit-officer-guid-here",
+  "reason": "Customer territory moved to another officer"
+}
+
+###
+
 POST {{Circle.WebApi_HostAddress}}/api/customers
 Authorization: Bearer {{AccessToken}}
 Content-Type: application/json

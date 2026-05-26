@@ -286,6 +286,47 @@ public sealed class CustomerService(
         return ToResponse(customer);
     }
 
+    public async Task<CustomerResponse> ReassignCustomerAsync(Guid customerId, ReassignCustomerRequest request, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(request.Reason))
+        {
+            throw new AppException("Reassignment reason is required.");
+        }
+
+        var currentUser = await RequireAdminAsync(cancellationToken);
+        var customer = await dbContext.Customers
+            .SingleOrDefaultAsync(candidate => candidate.Id == customerId, cancellationToken)
+            ?? throw new AppException("Customer was not found.");
+
+        var previousOfficerId = customer.AssignedCreditOfficerId;
+        if (previousOfficerId == request.AssignedCreditOfficerId)
+        {
+            throw new AppException("Customer is already assigned to this credit officer.");
+        }
+
+        var assignedOfficer = await dbContext.Users
+            .SingleOrDefaultAsync(user => user.Id == request.AssignedCreditOfficerId, cancellationToken)
+            ?? throw new AppException("Assigned credit officer was not found.");
+
+        if (assignedOfficer.Role != UserRole.CreditOfficer || assignedOfficer.Status != UserStatus.Active)
+        {
+            throw new AppException("Assigned user must be an active credit officer.");
+        }
+
+        customer.AssignCreditOfficer(assignedOfficer.Id);
+        dbContext.AuditLogs.Add(new AuditLog(
+            currentUser.Id,
+            "ReassignCustomer",
+            $"Customer:{customer.CustomerCode}",
+            previousOfficerId.ToString(),
+            assignedOfficer.Id.ToString(),
+            currentUserService.IpAddress,
+            request.Reason));
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return ToResponse(customer);
+    }
+
     public async Task<CustomerResponse> ArchiveCustomerAsync(Guid customerId, CancellationToken cancellationToken = default)
     {
         var currentUser = await GetCurrentUserAsync(cancellationToken);
@@ -307,6 +348,17 @@ public sealed class CustomerService(
 
         return await dbContext.Users.SingleOrDefaultAsync(user => user.Id == currentUserId, cancellationToken)
             ?? throw new AppException("Current user was not found.");
+    }
+
+    private async Task<User> RequireAdminAsync(CancellationToken cancellationToken)
+    {
+        var currentUser = await GetCurrentUserAsync(cancellationToken);
+        if (currentUser.Role != UserRole.Admin)
+        {
+            throw new AppException("Only admins can reassign customers.");
+        }
+
+        return currentUser;
     }
 
     private IQueryable<Customer> ApplyCustomerScope(IQueryable<Customer> query, User currentUser)

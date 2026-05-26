@@ -20,5 +20,7 @@ public interface ICustomerService
 
     Task<CustomerResponse> UpdateCustomerAsync(Guid customerId, UpdateCustomerRequest request, CancellationToken cancellationToken = default);
 
+    Task<CustomerResponse> ReassignCustomerAsync(Guid customerId, ReassignCustomerRequest request, CancellationToken cancellationToken = default);
+
     Task<CustomerResponse> ArchiveCustomerAsync(Guid customerId, CancellationToken cancellationToken = default);
 }

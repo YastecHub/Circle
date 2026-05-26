@@ -42,6 +42,10 @@ public sealed record UpdateCustomerRequest(
     Guid? AssignedCreditOfficerId,
     string? Notes);
 
+public sealed record ReassignCustomerRequest(
+    Guid AssignedCreditOfficerId,
+    string Reason);
+
 public sealed record CustomerResponse(
     Guid Id,
     string CustomerCode,
