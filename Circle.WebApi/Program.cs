@@ -46,6 +46,17 @@ try
     {
         options.EnableForHttps = true;
     });
+    var allowedCorsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("CircleFrontend", policy =>
+        {
+            policy
+                .WithOrigins(allowedCorsOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+    });
 
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
@@ -124,6 +135,7 @@ try
 
     app.UseHttpsRedirection();
     app.UseResponseCompression();
+    app.UseCors("CircleFrontend");
 
     app.UseAuthentication();
     app.UseAuthorization();
