@@ -19,7 +19,7 @@ public static class DependencyInjection
                 "Database connection string is missing. Set ConnectionStrings__DefaultConnection in App Settings or MYSQLCONNSTR_DefaultConnection in Azure Connection strings.");
         }
 
-        services.AddDbContext<CircleDbContext>(options =>
+        services.AddDbContextPool<CircleDbContext>(options =>
             options.UseMySQL(connectionString));
 
         services.AddScoped<IApplicationDbContext>(provider =>

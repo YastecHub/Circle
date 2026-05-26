@@ -33,5 +33,6 @@ public sealed class LoanDisbursementConfiguration : IEntityTypeConfiguration<Loa
         builder.HasIndex(disbursement => disbursement.DisbursementDate);
         builder.HasIndex(disbursement => disbursement.DisbursedByUserId);
         builder.HasIndex(disbursement => disbursement.Reference);
+        builder.HasIndex(disbursement => new { disbursement.CustomerId, disbursement.DisbursementDate });
     }
 }

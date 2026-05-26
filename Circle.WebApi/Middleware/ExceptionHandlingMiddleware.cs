@@ -12,10 +12,17 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
         }
         catch (AppException exception)
         {
+            logger.LogWarning(
+                exception,
+                "Handled application exception for {Method} {Path}",
+                context.Request.Method,
+                context.Request.Path);
+
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             await context.Response.WriteAsJsonAsync(new
             {
-                error = exception.Message
+                error = exception.Message,
+                traceId = context.TraceIdentifier
             });
         }
         catch (Exception exception)

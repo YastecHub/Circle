@@ -35,5 +35,6 @@ public sealed class CollectionActivityConfiguration : IEntityTypeConfiguration<C
         builder.HasIndex(activity => activity.OfficerUserId);
         builder.HasIndex(activity => activity.CreatedAtUtc);
         builder.HasIndex(activity => activity.PromisedPaymentDate);
+        builder.HasIndex(activity => new { activity.Outcome, activity.PromisedPaymentDate });
     }
 }

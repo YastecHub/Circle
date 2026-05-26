@@ -43,5 +43,6 @@ public sealed class CustomerVirtualAccountConfiguration : IEntityTypeConfigurati
         builder.HasIndex(account => account.AccountNumber);
         builder.HasIndex(account => account.ProviderReference);
         builder.HasIndex(account => account.Status);
+        builder.HasIndex(account => new { account.Provider, account.AccountNumber, account.Status });
     }
 }

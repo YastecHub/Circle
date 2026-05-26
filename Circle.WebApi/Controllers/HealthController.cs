@@ -1,3 +1,4 @@
+using Circle.WebApi.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Circle.WebApi.Controllers;
@@ -9,11 +10,6 @@ public sealed class HealthController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok(new
-        {
-            service = "Circle.WebApi",
-            status = "Healthy",
-            checkedAtUtc = DateTime.UtcNow
-        });
+        return Ok(new HealthResponse("Healthy", "Circle.WebApi", DateTime.UtcNow));
     }
 }

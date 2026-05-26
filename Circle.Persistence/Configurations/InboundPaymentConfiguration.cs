@@ -53,5 +53,6 @@ public sealed class InboundPaymentConfiguration : IEntityTypeConfiguration<Inbou
         builder.HasIndex(payment => payment.RepaymentId);
         builder.HasIndex(payment => payment.Status);
         builder.HasIndex(payment => payment.PaidAtUtc);
+        builder.HasIndex(payment => new { payment.Provider, payment.ProviderReference });
     }
 }

@@ -59,6 +59,7 @@ public sealed class LoanConfiguration : IEntityTypeConfiguration<Loan>
         builder.HasIndex(loan => loan.Status);
         builder.HasIndex(loan => loan.RequestedByUserId);
         builder.HasIndex(loan => loan.ApprovedByUserId);
+        builder.HasIndex(loan => new { loan.Status, loan.CreatedAtUtc });
 
         builder.HasMany(loan => loan.RepaymentSchedules)
             .WithOne()

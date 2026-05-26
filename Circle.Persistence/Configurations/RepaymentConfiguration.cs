@@ -31,5 +31,6 @@ public sealed class RepaymentConfiguration : IEntityTypeConfiguration<Repayment>
         builder.HasIndex(repayment => repayment.PaymentDate);
         builder.HasIndex(repayment => repayment.RecordedByUserId);
         builder.HasIndex(repayment => repayment.Reference);
+        builder.HasIndex(repayment => new { repayment.CustomerId, repayment.PaymentDate });
     }
 }

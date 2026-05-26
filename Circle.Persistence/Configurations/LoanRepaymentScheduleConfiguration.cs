@@ -31,6 +31,7 @@ public sealed class LoanRepaymentScheduleConfiguration : IEntityTypeConfiguratio
 
         builder.HasIndex(schedule => schedule.LoanId);
         builder.HasIndex(schedule => schedule.DueDate);
+        builder.HasIndex(schedule => new { schedule.Status, schedule.DueDate });
         builder.HasIndex(schedule => new { schedule.LoanId, schedule.InstallmentNumber })
             .IsUnique();
     }

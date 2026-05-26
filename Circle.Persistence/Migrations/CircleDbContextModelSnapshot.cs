@@ -129,6 +129,8 @@ namespace Circle.Persistence.Migrations
 
                     b.HasIndex("RepaymentScheduleId");
 
+                    b.HasIndex("Outcome", "PromisedPaymentDate");
+
                     b.ToTable("collection_activities", (string)null);
                 });
 
@@ -345,6 +347,8 @@ namespace Circle.Persistence.Migrations
 
                     b.HasIndex("Status");
 
+                    b.HasIndex("Provider", "AccountNumber", "Status");
+
                     b.ToTable("customer_virtual_accounts", (string)null);
                 });
 
@@ -433,6 +437,8 @@ namespace Circle.Persistence.Migrations
                     b.HasIndex("RepaymentId");
 
                     b.HasIndex("Status");
+
+                    b.HasIndex("Provider", "ProviderReference");
 
                     b.ToTable("inbound_payments", (string)null);
                 });
@@ -531,6 +537,8 @@ namespace Circle.Persistence.Migrations
 
                     b.HasIndex("Status");
 
+                    b.HasIndex("Status", "CreatedAtUtc");
+
                     b.ToTable("loans", (string)null);
                 });
 
@@ -588,6 +596,8 @@ namespace Circle.Persistence.Migrations
 
                     b.HasIndex("Reference");
 
+                    b.HasIndex("CustomerId", "DisbursementDate");
+
                     b.ToTable("loan_disbursements", (string)null);
                 });
 
@@ -644,6 +654,8 @@ namespace Circle.Persistence.Migrations
 
                     b.HasIndex("LoanId", "InstallmentNumber")
                         .IsUnique();
+
+                    b.HasIndex("Status", "DueDate");
 
                     b.ToTable("loan_repayment_schedules", (string)null);
                 });
@@ -802,6 +814,8 @@ namespace Circle.Persistence.Migrations
                     b.HasIndex("RecordedByUserId");
 
                     b.HasIndex("Reference");
+
+                    b.HasIndex("CustomerId", "PaymentDate");
 
                     b.ToTable("repayments", (string)null);
                 });
