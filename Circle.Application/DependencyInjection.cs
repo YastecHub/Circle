@@ -4,6 +4,7 @@ using Circle.Application.Auth;
 using Circle.Application.Collections;
 using Circle.Application.CustomerDocuments;
 using Circle.Application.Customers;
+using Circle.Application.Dashboard;
 using Circle.Application.Disbursements;
 using Circle.Application.Loans;
 using Circle.Application.Reconciliation;
@@ -24,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<ICollectionService, CollectionService>();
         services.AddScoped<ICustomerDocumentService, CustomerDocumentService>();
         services.AddScoped<ICustomerService, CustomerService>();
+        services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IDisbursementService, DisbursementService>();
         services.AddScoped<ILoanService, LoanService>();
         services.AddScoped<IReconciliationService, ReconciliationService>();
