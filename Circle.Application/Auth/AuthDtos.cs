@@ -25,6 +25,18 @@ public sealed record AuthUserResponse(
     UserRole Role,
     UserStatus Status);
 
+public sealed record CurrentUserResponse(
+    Guid Id,
+    string Email,
+    string FullName,
+    string Phone,
+    UserRole Role,
+    UserStatus Status,
+    string? Branch,
+    DateTime CreatedAtUtc,
+    DateTime? LastLoginAtUtc,
+    IReadOnlyCollection<string> Permissions);
+
 public sealed record AuthTokenResponse(
     string AccessToken,
     DateTime AccessTokenExpiresAtUtc,

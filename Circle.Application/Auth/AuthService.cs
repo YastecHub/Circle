@@ -121,9 +121,68 @@ public sealed class AuthService(
             ToAuthUserResponse(user));
     }
 
+    public async Task<CurrentUserResponse> GetCurrentUserAsync(CancellationToken cancellationToken = default)
+    {
+        var currentUserId = currentUserService.UserId
+            ?? throw new AppException("Current user was not found.");
+
+        var user = await dbContext.Users.SingleOrDefaultAsync(candidate => candidate.Id == currentUserId, cancellationToken)
+            ?? throw new AppException("Current user was not found.");
+
+        return new CurrentUserResponse(
+            user.Id,
+            user.Email,
+            user.FullName,
+            user.Phone,
+            user.Role,
+            user.Status,
+            user.Branch,
+            user.CreatedAtUtc,
+            user.LastLoginAtUtc,
+            GetPermissions(user.Role));
+    }
+
     private static AuthUserResponse ToAuthUserResponse(User user)
     {
         return new AuthUserResponse(user.Id, user.Email, user.FullName, user.Phone, user.Role, user.Status);
+    }
+
+    private static IReadOnlyCollection<string> GetPermissions(UserRole role)
+    {
+        var commonPermissions = new[]
+        {
+            "dashboard.read",
+            "customers.read",
+            "customers.write",
+            "loans.read",
+            "loans.write",
+            "repayments.read",
+            "repayments.write",
+            "collections.read",
+            "collections.write",
+            "reports.read",
+            "search.read"
+        };
+
+        if (role == UserRole.CreditOfficer)
+        {
+            return commonPermissions;
+        }
+
+        return commonPermissions
+            .Concat([
+                "users.manage",
+                "customers.reassign",
+                "loans.approve",
+                "disbursements.read",
+                "disbursements.write",
+                "reconciliation.read",
+                "reconciliation.write",
+                "settings.manage",
+                "audit.read",
+                "webhooks.read"
+            ])
+            .ToList();
     }
 
     private static string NormalizeEmail(string email)

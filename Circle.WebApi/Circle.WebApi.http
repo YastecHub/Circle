@@ -38,6 +38,12 @@ Content-Type: application/json
 
 ###
 
+GET {{Circle.WebApi_HostAddress}}/api/auth/me
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
 GET {{Circle.WebApi_HostAddress}}/api/users
 Authorization: Bearer {{AccessToken}}
 Accept: application/json

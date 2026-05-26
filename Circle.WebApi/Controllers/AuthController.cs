@@ -29,4 +29,11 @@ public sealed class AuthController(IAuthService authService) : ControllerBase
     {
         return Ok(await authService.VerifyOtpAsync(request, cancellationToken));
     }
+
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> GetCurrentUser(CancellationToken cancellationToken)
+    {
+        return Ok(await authService.GetCurrentUserAsync(cancellationToken));
+    }
 }
