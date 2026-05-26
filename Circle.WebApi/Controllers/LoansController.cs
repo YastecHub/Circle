@@ -22,6 +22,17 @@ public sealed class LoansController(ILoanService loanService) : ControllerBase
         return Ok(await loanService.GetLoansAsync(search, status, customerId, page, pageSize, cancellationToken));
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpGet("pending-approvals")]
+    public async Task<IActionResult> GetPendingApprovalLoans(
+        [FromQuery] string? search,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        return Ok(await loanService.GetPendingApprovalLoansAsync(search, page, pageSize, cancellationToken));
+    }
+
     [HttpGet("{loanId:guid}")]
     public async Task<IActionResult> GetLoan(Guid loanId, CancellationToken cancellationToken)
     {

@@ -104,6 +104,35 @@ public sealed record LoanStatementDisbursementLine(
     string? Notes,
     DateTime CreatedAtUtc);
 
+public sealed record PendingApprovalLoanResponse(
+    Guid Id,
+    string LoanCode,
+    Guid CustomerId,
+    string CustomerCode,
+    string CustomerName,
+    string CustomerPhone,
+    Guid RequestedByUserId,
+    string RequestedByName,
+    decimal PrincipalAmount,
+    decimal InterestRatePercent,
+    decimal InterestAmount,
+    decimal TotalRepayable,
+    int TermCount,
+    RepaymentFrequency RepaymentFrequency,
+    DateOnly FirstRepaymentDate,
+    DateOnly MaturityDate,
+    string? Purpose,
+    decimal AutoApprovalThreshold,
+    decimal AmountAboveThreshold,
+    int DaysPending,
+    DateTime CreatedAtUtc);
+
+public sealed record PendingApprovalLoanListResponse(
+    IReadOnlyCollection<PendingApprovalLoanResponse> Items,
+    int Page,
+    int PageSize,
+    int TotalCount);
+
 public sealed record LoanListResponse(
     IReadOnlyCollection<LoanResponse> Items,
     int Page,

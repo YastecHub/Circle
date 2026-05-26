@@ -16,6 +16,12 @@ public interface ILoanService
 
     Task<LoanStatementResponse> GetLoanStatementAsync(Guid loanId, CancellationToken cancellationToken = default);
 
+    Task<PendingApprovalLoanListResponse> GetPendingApprovalLoansAsync(
+        string? search,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+
     Task<LoanResponse> CreateLoanAsync(CreateLoanRequest request, CancellationToken cancellationToken = default);
 
     Task<LoanResponse> ApproveLoanAsync(Guid loanId, ApproveLoanRequest request, CancellationToken cancellationToken = default);

@@ -158,6 +158,76 @@ public sealed class LoanService(
                 disbursement.CreatedAtUtc)).ToList());
     }
 
+    public async Task<PendingApprovalLoanListResponse> GetPendingApprovalLoansAsync(
+        string? search,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        await RequireAdminAsync(cancellationToken);
+        page = Math.Max(page, 1);
+        pageSize = Math.Clamp(pageSize <= 0 ? 20 : pageSize, 1, MaximumPageSize);
+
+        var query =
+            from loan in dbContext.Loans.AsNoTracking()
+            join customer in dbContext.Customers.AsNoTracking() on loan.CustomerId equals customer.Id
+            join requester in dbContext.Users.AsNoTracking() on loan.RequestedByUserId equals requester.Id
+            where loan.Status == LoanStatus.PendingOwnerApproval
+            select new
+            {
+                Loan = loan,
+                CustomerCode = customer.CustomerCode,
+                CustomerName = customer.FullName,
+                CustomerPhone = customer.Phone,
+                RequestedByName = requester.FullName
+            };
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var normalizedSearch = search.Trim();
+            query = query.Where(item =>
+                item.Loan.LoanCode.Contains(normalizedSearch) ||
+                item.CustomerCode.Contains(normalizedSearch) ||
+                item.CustomerName.Contains(normalizedSearch) ||
+                item.CustomerPhone.Contains(normalizedSearch));
+        }
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var autoApprovalThreshold = await GetAutoApprovalThresholdAsync(cancellationToken);
+        var now = dateTimeProvider.UtcNow;
+        var pendingLoans = await query
+            .OrderBy(item => item.Loan.CreatedAtUtc)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+        var items = pendingLoans
+            .Select(item => new PendingApprovalLoanResponse(
+                item.Loan.Id,
+                item.Loan.LoanCode,
+                item.Loan.CustomerId,
+                item.CustomerCode,
+                item.CustomerName,
+                item.CustomerPhone,
+                item.Loan.RequestedByUserId,
+                item.RequestedByName,
+                item.Loan.PrincipalAmount,
+                item.Loan.InterestRatePercent,
+                item.Loan.InterestAmount,
+                item.Loan.TotalRepayable,
+                item.Loan.TermCount,
+                item.Loan.RepaymentFrequency,
+                item.Loan.StartDate,
+                item.Loan.MaturityDate,
+                item.Loan.Purpose,
+                autoApprovalThreshold,
+                item.Loan.PrincipalAmount > autoApprovalThreshold ? item.Loan.PrincipalAmount - autoApprovalThreshold : 0,
+                Math.Max(0, (now.Date - item.Loan.CreatedAtUtc.Date).Days),
+                item.Loan.CreatedAtUtc))
+            .ToList();
+
+        return new PendingApprovalLoanListResponse(items, page, pageSize, totalCount);
+    }
+
     public async Task<LoanResponse> CreateLoanAsync(CreateLoanRequest request, CancellationToken cancellationToken = default)
     {
         ValidateCreateLoanRequest(request);

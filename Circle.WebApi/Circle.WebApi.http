@@ -229,6 +229,12 @@ Accept: application/json
 
 ###
 
+GET {{Circle.WebApi_HostAddress}}/api/loans/pending-approvals
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
 GET {{Circle.WebApi_HostAddress}}/api/loans/paste-loan-guid-here/statement
 Authorization: Bearer {{AccessToken}}
 Accept: application/json
