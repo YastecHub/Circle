@@ -23,6 +23,15 @@ public sealed class CollectionsController(ICollectionService collectionService) 
         return Ok(await collectionService.GetActivitiesAsync(customerId, loanId, officerUserId, fromUtc, toUtc, page, pageSize, cancellationToken));
     }
 
+    [HttpGet("worklist")]
+    public async Task<IActionResult> GetWorklist(
+        [FromQuery] DateOnly? workDate,
+        [FromQuery] Guid? officerUserId,
+        CancellationToken cancellationToken = default)
+    {
+        return Ok(await collectionService.GetWorklistAsync(workDate, officerUserId, cancellationToken));
+    }
+
     [HttpPost("activities")]
     public async Task<IActionResult> RecordActivity(RecordCollectionActivityRequest request, CancellationToken cancellationToken)
     {

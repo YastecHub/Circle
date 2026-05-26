@@ -31,4 +31,35 @@ public sealed record CollectionActivityListResponse(
     int PageSize,
     int TotalCount);
 
+public sealed record CollectionWorklistResponse(
+    DateOnly WorkDate,
+    int DueTodayCount,
+    int OverdueCount,
+    int PromiseToPayCount,
+    decimal DueTodayAmount,
+    decimal OverdueAmount,
+    decimal PromiseToPayAmount,
+    IReadOnlyCollection<CollectionWorklistItemResponse> Items);
+
+public sealed record CollectionWorklistItemResponse(
+    string ItemType,
+    Guid CustomerId,
+    string CustomerCode,
+    string CustomerName,
+    string CustomerPhone,
+    Guid AssignedCreditOfficerId,
+    string AssignedCreditOfficerName,
+    Guid? LoanId,
+    string? LoanCode,
+    Guid? RepaymentScheduleId,
+    int? InstallmentNumber,
+    DateOnly? DueDate,
+    int? DaysOverdue,
+    decimal AmountDue,
+    Guid? CollectionActivityId,
+    DateOnly? PromisedPaymentDate,
+    decimal? PromisedAmount,
+    string? LastNote,
+    DateTime? LastActivityAtUtc);
+
 public sealed record RefreshOverdueSchedulesResponse(int UpdatedCount);

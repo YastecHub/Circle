@@ -201,6 +201,12 @@ Accept: application/json
 
 ###
 
+GET {{Circle.WebApi_HostAddress}}/api/collections/worklist
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
+
+###
+
 POST {{Circle.WebApi_HostAddress}}/api/collections/activities
 Authorization: Bearer {{AccessToken}}
 Content-Type: application/json

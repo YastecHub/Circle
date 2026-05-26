@@ -65,6 +65,133 @@ public sealed class CollectionService(
         return new CollectionActivityListResponse(items, page, pageSize, totalCount);
     }
 
+    public async Task<CollectionWorklistResponse> GetWorklistAsync(
+        DateOnly? workDate,
+        Guid? officerUserId,
+        CancellationToken cancellationToken = default)
+    {
+        var currentUser = await GetCurrentUserAsync(cancellationToken);
+        var targetDate = workDate ?? DateOnly.FromDateTime(dateTimeProvider.UtcNow);
+        var scopedOfficerUserId = currentUser.Role == UserRole.CreditOfficer ? currentUser.Id : officerUserId;
+
+        var scheduleItems = await (
+            from schedule in ApplyScheduleScope(dbContext.LoanRepaymentSchedules.AsNoTracking(), currentUser)
+            join loan in dbContext.Loans.AsNoTracking() on schedule.LoanId equals loan.Id
+            join customer in dbContext.Customers.AsNoTracking() on loan.CustomerId equals customer.Id
+            join officer in dbContext.Users.AsNoTracking() on customer.AssignedCreditOfficerId equals officer.Id
+            where schedule.Status != RepaymentScheduleStatus.Paid &&
+                  schedule.DueDate <= targetDate &&
+                  (scopedOfficerUserId == null || customer.AssignedCreditOfficerId == scopedOfficerUserId)
+            select new
+            {
+                CustomerId = customer.Id,
+                customer.CustomerCode,
+                CustomerName = customer.FullName,
+                CustomerPhone = customer.Phone,
+                customer.AssignedCreditOfficerId,
+                AssignedCreditOfficerName = officer.FullName,
+                LoanId = loan.Id,
+                loan.LoanCode,
+                RepaymentScheduleId = schedule.Id,
+                schedule.InstallmentNumber,
+                schedule.DueDate,
+                AmountDue = schedule.TotalAmount - schedule.AmountPaid
+            })
+            .ToListAsync(cancellationToken);
+
+        var promiseItems = await (
+            from activity in ApplyActivityScope(dbContext.CollectionActivities.AsNoTracking(), currentUser)
+            join customer in dbContext.Customers.AsNoTracking() on activity.CustomerId equals customer.Id
+            join officer in dbContext.Users.AsNoTracking() on customer.AssignedCreditOfficerId equals officer.Id
+            join loan in dbContext.Loans.AsNoTracking() on activity.LoanId equals loan.Id into loanGroup
+            from loan in loanGroup.DefaultIfEmpty()
+            where activity.Outcome == CollectionOutcome.PromiseToPay &&
+                  activity.PromisedPaymentDate != null &&
+                  activity.PromisedPaymentDate <= targetDate &&
+                  (scopedOfficerUserId == null || customer.AssignedCreditOfficerId == scopedOfficerUserId)
+            select new
+            {
+                ActivityId = activity.Id,
+                CustomerId = customer.Id,
+                customer.CustomerCode,
+                CustomerName = customer.FullName,
+                CustomerPhone = customer.Phone,
+                customer.AssignedCreditOfficerId,
+                AssignedCreditOfficerName = officer.FullName,
+                activity.LoanId,
+                LoanCode = loan == null ? null : loan.LoanCode,
+                activity.RepaymentScheduleId,
+                activity.PromisedPaymentDate,
+                activity.PromisedAmount,
+                activity.Notes,
+                activity.CreatedAtUtc
+            })
+            .ToListAsync(cancellationToken);
+
+        var dueItems = scheduleItems
+            .Select(item => new CollectionWorklistItemResponse(
+                item.DueDate < targetDate ? "Overdue" : "DueToday",
+                item.CustomerId,
+                item.CustomerCode,
+                item.CustomerName,
+                item.CustomerPhone,
+                item.AssignedCreditOfficerId,
+                item.AssignedCreditOfficerName,
+                item.LoanId,
+                item.LoanCode,
+                item.RepaymentScheduleId,
+                item.InstallmentNumber,
+                item.DueDate,
+                item.DueDate < targetDate ? targetDate.DayNumber - item.DueDate.DayNumber : null,
+                item.AmountDue,
+                null,
+                null,
+                null,
+                null,
+                null))
+            .ToList();
+
+        var promiseWorkItems = promiseItems
+            .Select(item => new CollectionWorklistItemResponse(
+                "PromiseToPay",
+                item.CustomerId,
+                item.CustomerCode,
+                item.CustomerName,
+                item.CustomerPhone,
+                item.AssignedCreditOfficerId,
+                item.AssignedCreditOfficerName,
+                item.LoanId,
+                item.LoanCode,
+                item.RepaymentScheduleId,
+                null,
+                null,
+                item.PromisedPaymentDate < targetDate ? targetDate.DayNumber - item.PromisedPaymentDate.Value.DayNumber : null,
+                item.PromisedAmount ?? 0,
+                item.ActivityId,
+                item.PromisedPaymentDate,
+                item.PromisedAmount,
+                item.Notes,
+                item.CreatedAtUtc))
+            .ToList();
+
+        var items = dueItems
+            .Concat(promiseWorkItems)
+            .OrderBy(item => item.ItemType == "Overdue" ? 0 : item.ItemType == "DueToday" ? 1 : 2)
+            .ThenByDescending(item => item.DaysOverdue ?? 0)
+            .ThenBy(item => item.CustomerName)
+            .ToList();
+
+        return new CollectionWorklistResponse(
+            targetDate,
+            dueItems.Count(item => item.ItemType == "DueToday"),
+            dueItems.Count(item => item.ItemType == "Overdue"),
+            promiseWorkItems.Count,
+            dueItems.Where(item => item.ItemType == "DueToday").Sum(item => item.AmountDue),
+            dueItems.Where(item => item.ItemType == "Overdue").Sum(item => item.AmountDue),
+            promiseWorkItems.Sum(item => item.AmountDue),
+            items);
+    }
+
     public async Task<CollectionActivityResponse> RecordActivityAsync(RecordCollectionActivityRequest request, CancellationToken cancellationToken = default)
     {
         ValidateRequest(request);
@@ -175,6 +302,20 @@ public sealed class CollectionService(
         return query.Where(activity => dbContext.Customers.Any(customer =>
             customer.Id == activity.CustomerId &&
             customer.AssignedCreditOfficerId == currentUser.Id));
+    }
+
+    private IQueryable<LoanRepaymentSchedule> ApplyScheduleScope(IQueryable<LoanRepaymentSchedule> query, User currentUser)
+    {
+        if (currentUser.Role == UserRole.Admin)
+        {
+            return query;
+        }
+
+        return query.Where(schedule => dbContext.Loans.Any(loan =>
+            loan.Id == schedule.LoanId &&
+            dbContext.Customers.Any(customer =>
+                customer.Id == loan.CustomerId &&
+                customer.AssignedCreditOfficerId == currentUser.Id)));
     }
 
     private static void ValidateRequest(RecordCollectionActivityRequest request)

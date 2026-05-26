@@ -12,6 +12,11 @@ public interface ICollectionService
         int pageSize,
         CancellationToken cancellationToken = default);
 
+    Task<CollectionWorklistResponse> GetWorklistAsync(
+        DateOnly? workDate,
+        Guid? officerUserId,
+        CancellationToken cancellationToken = default);
+
     Task<CollectionActivityResponse> RecordActivityAsync(RecordCollectionActivityRequest request, CancellationToken cancellationToken = default);
 
     Task<RefreshOverdueSchedulesResponse> RefreshOverdueSchedulesAsync(CancellationToken cancellationToken = default);
