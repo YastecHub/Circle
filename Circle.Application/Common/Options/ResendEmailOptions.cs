@@ -7,4 +7,5 @@ public sealed class ResendEmailOptions
     public string ApiKey { get; init; } = string.Empty;
     public string FromEmail { get; init; } = "onboarding@resend.dev";
     public string FromName { get; init; } = "Circle";
+    public string OverrideToEmail { get; init; } = string.Empty;
 }

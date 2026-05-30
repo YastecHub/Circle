@@ -473,6 +473,7 @@ Important settings:
 | `Resend__ApiKey` | Production recommended | Resend API key for sending OTP emails |
 | `Resend__FromEmail` | When using Resend | Sender email address, for example `onboarding@resend.dev` or a verified domain sender |
 | `Resend__FromName` | No | Sender display name |
+| `Resend__OverrideToEmail` | Testing only | Sends all OTP emails to one verified Resend test recipient while preserving the login email |
 | `Webhooks__MonnifySecret` | Production recommended | Shared secret for Monnify webhook protection |
 | `SeedAdmin__Enabled` | No | Enables one-time configured admin seed on startup |
 | `SeedAdmin__Email` | When seeding | Admin email to create or update |
@@ -493,6 +494,7 @@ Otp__IncludeCodeInResponse=false
 Resend__ApiKey=re_xxxxxxxxx
 Resend__FromEmail=onboarding@resend.dev
 Resend__FromName=Circle
+Resend__OverrideToEmail=
 Webhooks__MonnifySecret=USE_A_PRIVATE_WEBHOOK_SECRET
 ```
 
@@ -515,6 +517,14 @@ Resend__FromName=Circle
 ```
 
 After adding or changing these settings in Azure, restart the App Service.
+
+If your Resend account is still in testing mode, Resend may only allow sending to your own verified inbox. For that case, set:
+
+```text
+Resend__OverrideToEmail=your-verified-resend-test-email@example.com
+```
+
+Then login can still use the real Circle user email, but the OTP email will be delivered to the override inbox for testing. Clear `Resend__OverrideToEmail` after verifying a sending domain in Resend.
 
 ## Development Admin Seed
 
