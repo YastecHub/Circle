@@ -1,8 +1,10 @@
 using Circle.Application.Abstractions;
+using Circle.Application.Common.Options;
 using Circle.Persistence.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Resend;
 
 namespace Circle.Persistence;
 
@@ -28,7 +30,21 @@ public static class DependencyInjection
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IFileStorageService, LocalFileStorageService>();
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
-        services.AddSingleton<IEmailSender, ConsoleEmailSender>();
+
+        var resendApiKey = configuration["Resend:ApiKey"] ?? configuration["RESEND_APITOKEN"];
+        if (string.IsNullOrWhiteSpace(resendApiKey))
+        {
+            services.AddSingleton<IEmailSender, ConsoleEmailSender>();
+        }
+        else
+        {
+            services.Configure<ResendEmailOptions>(configuration.GetSection(ResendEmailOptions.SectionName));
+            services.AddResend(options =>
+            {
+                options.ApiToken = resendApiKey;
+            });
+            services.AddScoped<IEmailSender, ResendEmailSender>();
+        }
 
         return services;
     }

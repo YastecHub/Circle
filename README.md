@@ -470,6 +470,9 @@ Important settings:
 | `Otp__ExpiryMinutes` | No | OTP expiry time |
 | `Otp__IncludeCodeInResponse` | Local only | Allows Swagger/local testing of OTP flow |
 | `FileStorage__RootPath` | No | Root path for locally stored uploaded files |
+| `Resend__ApiKey` | Production recommended | Resend API key for sending OTP emails |
+| `Resend__FromEmail` | When using Resend | Sender email address, for example `onboarding@resend.dev` or a verified domain sender |
+| `Resend__FromName` | No | Sender display name |
 | `Webhooks__MonnifySecret` | Production recommended | Shared secret for Monnify webhook protection |
 | `SeedAdmin__Enabled` | No | Enables one-time configured admin seed on startup |
 | `SeedAdmin__Email` | When seeding | Admin email to create or update |
@@ -487,8 +490,31 @@ Jwt__Issuer=Circle
 Jwt__Audience=Circle.Web
 Jwt__SigningKey=USE_A_LONG_RANDOM_SECRET_FROM_A_PASSWORD_MANAGER
 Otp__IncludeCodeInResponse=false
+Resend__ApiKey=re_xxxxxxxxx
+Resend__FromEmail=onboarding@resend.dev
+Resend__FromName=Circle
 Webhooks__MonnifySecret=USE_A_PRIVATE_WEBHOOK_SECRET
 ```
+
+Replace `re_xxxxxxxxx` with the real Resend API key from your Resend dashboard. For production, use a verified Resend domain sender when available instead of `onboarding@resend.dev`.
+
+## Email Delivery
+
+Circle sends login OTPs through the `IEmailSender` abstraction.
+
+- If `Resend__ApiKey` is configured, OTP emails are sent through Resend.
+- If `Resend__ApiKey` is empty, the app falls back to console logging. This is useful for local development.
+- The login endpoint still returns `debugOtpCode` only when `Otp__IncludeCodeInResponse=true`.
+
+Azure App Service settings for Resend:
+
+```text
+Resend__ApiKey=re_xxxxxxxxx
+Resend__FromEmail=onboarding@resend.dev
+Resend__FromName=Circle
+```
+
+After adding or changing these settings in Azure, restart the App Service.
 
 ## Development Admin Seed
 
