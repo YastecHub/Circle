@@ -518,6 +518,8 @@ Important:
 - Remove `SeedAdmin__Password` from Azure settings after the seed is complete.
 - Do not commit real seed passwords to source control.
 
+For local development, you can place these values in `Circle.WebApi/appsettings.Local.json`. That file is ignored by Git and is loaded only when `ASPNETCORE_ENVIRONMENT=Development`.
+
 ## Database Migrations
 
 Existing migrations:
