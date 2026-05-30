@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,CreditOfficer")]
+[Authorize(Roles = "AppAdmin,Admin,Developer,CreditOfficer")]
 [Route("api/customers/{customerId:guid}/documents")]
 public sealed class CustomerDocumentsController(ICustomerDocumentService customerDocumentService) : ControllerBase
 {
@@ -52,3 +52,5 @@ public sealed class CustomerDocumentsController(ICustomerDocumentService custome
         return NoContent();
     }
 }
+
+

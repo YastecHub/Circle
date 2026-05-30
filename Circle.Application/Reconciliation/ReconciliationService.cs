@@ -187,7 +187,7 @@ public sealed class ReconciliationService(
     private async Task<User> RequireAdminAsync(CancellationToken cancellationToken)
     {
         var currentUser = await GetCurrentUserAsync(cancellationToken);
-        if (currentUser.Role != UserRole.Admin)
+        if (!currentUser.Role.HasAdminAccess())
         {
             throw new AppException("Only admins can reconcile inbound payments.");
         }
@@ -197,7 +197,7 @@ public sealed class ReconciliationService(
 
     private IQueryable<InboundPayment> ApplyInboundPaymentScope(IQueryable<InboundPayment> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -268,3 +268,4 @@ public sealed class ReconciliationService(
             payment.CreatedAtUtc);
     }
 }
+

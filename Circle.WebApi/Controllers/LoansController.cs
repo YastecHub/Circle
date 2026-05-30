@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,CreditOfficer")]
+[Authorize(Roles = "AppAdmin,Admin,Developer,CreditOfficer")]
 [Route("api/loans")]
 public sealed class LoansController(ILoanService loanService) : ControllerBase
 {
@@ -22,7 +22,7 @@ public sealed class LoansController(ILoanService loanService) : ControllerBase
         return Ok(await loanService.GetLoansAsync(search, status, customerId, page, pageSize, cancellationToken));
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "AppAdmin,Admin,Developer")]
     [HttpGet("pending-approvals")]
     public async Task<IActionResult> GetPendingApprovalLoans(
         [FromQuery] string? search,
@@ -52,17 +52,19 @@ public sealed class LoansController(ILoanService loanService) : ControllerBase
         return CreatedAtAction(nameof(GetLoan), new { loanId = response.Id }, response);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "AppAdmin,Admin,Developer")]
     [HttpPost("{loanId:guid}/approve")]
     public async Task<IActionResult> ApproveLoan(Guid loanId, ApproveLoanRequest request, CancellationToken cancellationToken)
     {
         return Ok(await loanService.ApproveLoanAsync(loanId, request, cancellationToken));
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "AppAdmin,Admin,Developer")]
     [HttpPost("{loanId:guid}/reject")]
     public async Task<IActionResult> RejectLoan(Guid loanId, RejectLoanRequest request, CancellationToken cancellationToken)
     {
         return Ok(await loanService.RejectLoanAsync(loanId, request, cancellationToken));
     }
 }
+
+

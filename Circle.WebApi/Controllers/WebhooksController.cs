@@ -34,7 +34,7 @@ public sealed class WebhooksController(
         return Ok(response);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "AppAdmin,Admin,Developer")]
     [HttpGet("monnify/events")]
     public async Task<IActionResult> GetMonnifyWebhookEvents(
         [FromQuery] PaymentWebhookStatus? status,
@@ -60,3 +60,5 @@ public sealed class WebhooksController(
                CryptographicOperations.FixedTimeEquals(expectedBytes, submittedBytes);
     }
 }
+
+

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,CreditOfficer")]
+[Authorize(Roles = "AppAdmin,Admin,Developer,CreditOfficer")]
 [Route("api/customers")]
 public sealed class CustomersController(ICustomerService customerService) : ControllerBase
 {
@@ -47,7 +47,7 @@ public sealed class CustomersController(ICustomerService customerService) : Cont
         return Ok(await customerService.UpdateCustomerAsync(customerId, request, cancellationToken));
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "AppAdmin,Admin,Developer")]
     [HttpPost("{customerId:guid}/reassign")]
     public async Task<IActionResult> ReassignCustomer(Guid customerId, ReassignCustomerRequest request, CancellationToken cancellationToken)
     {
@@ -60,3 +60,5 @@ public sealed class CustomersController(ICustomerService customerService) : Cont
         return Ok(await customerService.ArchiveCustomerAsync(customerId, cancellationToken));
     }
 }
+
+

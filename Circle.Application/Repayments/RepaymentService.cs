@@ -126,7 +126,7 @@ public sealed class RepaymentService(
 
     private IQueryable<Repayment> ApplyRepaymentScope(IQueryable<Repayment> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -151,3 +151,4 @@ public sealed class RepaymentService(
             repayment.CreatedAtUtc);
     }
 }
+

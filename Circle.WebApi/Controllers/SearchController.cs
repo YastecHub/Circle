@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,CreditOfficer")]
+[Authorize(Roles = "AppAdmin,Admin,Developer,CreditOfficer")]
 [Route("api/search")]
 public sealed class SearchController(IGlobalSearchService searchService) : ControllerBase
 {
@@ -18,3 +18,5 @@ public sealed class SearchController(IGlobalSearchService searchService) : Contr
         return Ok(await searchService.SearchAsync(query, limit, cancellationToken));
     }
 }
+
+

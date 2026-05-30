@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,CreditOfficer")]
+[Authorize(Roles = "AppAdmin,Admin,Developer,CreditOfficer")]
 [Route("api/reports")]
 public sealed class ReportsController(IReportService reportService) : ControllerBase
 {
@@ -42,3 +42,5 @@ public sealed class ReportsController(IReportService reportService) : Controller
         return Ok(await reportService.GetOfficerPerformanceAsync(cancellationToken));
     }
 }
+
+

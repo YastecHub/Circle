@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,CreditOfficer")]
+[Authorize(Roles = "AppAdmin,Admin,Developer,CreditOfficer")]
 [Route("api/dashboard")]
 public sealed class DashboardController(IDashboardService dashboardService) : ControllerBase
 {
@@ -15,3 +15,5 @@ public sealed class DashboardController(IDashboardService dashboardService) : Co
         return Ok(await dashboardService.GetOverviewAsync(cancellationToken));
     }
 }
+
+

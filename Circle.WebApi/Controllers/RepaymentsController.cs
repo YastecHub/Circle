@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,CreditOfficer")]
+[Authorize(Roles = "AppAdmin,Admin,Developer,CreditOfficer")]
 [Route("api/repayments")]
 public sealed class RepaymentsController(IRepaymentService repaymentService) : ControllerBase
 {
@@ -26,3 +26,5 @@ public sealed class RepaymentsController(IRepaymentService repaymentService) : C
         return Ok(await repaymentService.RecordRepaymentAsync(request, cancellationToken));
     }
 }
+
+

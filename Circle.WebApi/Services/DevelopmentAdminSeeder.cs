@@ -28,6 +28,7 @@ public static class DevelopmentAdminSeeder
             .CreateLogger("Circle.WebApi.Services.DevelopmentAdminSeeder");
 
         var email = options.Email.Trim().ToLowerInvariant();
+        var seedRole = ParseRole(options.Role);
         var admin = await dbContext.Users.SingleOrDefaultAsync(user => user.Email == email);
         var action = "SeedDevelopmentAdmin";
 
@@ -37,7 +38,7 @@ public static class DevelopmentAdminSeeder
                 options.Email,
                 options.FullName,
                 options.Phone,
-                UserRole.Admin,
+                seedRole,
                 branch: null,
                 createdByUserId: null);
 
@@ -49,7 +50,7 @@ public static class DevelopmentAdminSeeder
         {
             action = "UpdateDevelopmentAdmin";
             admin.UpdateProfile(options.FullName, options.Phone, branch: null);
-            admin.ChangeRole(UserRole.Admin);
+            admin.ChangeRole(seedRole);
             admin.Activate();
 
             if (options.ResetPassword)
@@ -61,7 +62,10 @@ public static class DevelopmentAdminSeeder
         if (options.DeactivateOtherAdmins)
         {
             var otherAdmins = await dbContext.Users
-                .Where(user => user.Email != email && user.Role == UserRole.Admin && user.Status == UserStatus.Active)
+                .Where(user =>
+                    user.Email != email &&
+                    (user.Role == UserRole.Admin || user.Role == UserRole.AppAdmin || user.Role == UserRole.Developer) &&
+                    user.Status == UserStatus.Active)
                 .ToListAsync();
 
             foreach (var otherAdmin in otherAdmins)
@@ -74,7 +78,7 @@ public static class DevelopmentAdminSeeder
                     UserStatus.Active.ToString(),
                     UserStatus.Deactivated.ToString(),
                     null,
-                    $"Development admin seed kept {email} as the configured admin."));
+                    $"Development admin seed kept {email} as the configured {seedRole} user."));
             }
         }
 
@@ -83,12 +87,23 @@ public static class DevelopmentAdminSeeder
             action,
             $"User:{email}",
             null,
-            "AdminReady",
+            $"{seedRole}Ready",
             null,
             "Development admin seed"));
 
         await dbContext.SaveChangesAsync();
         logger.LogWarning("Development admin seed applied for {Email}. Disable SeedAdmin__Enabled after confirming login.", email);
+    }
+
+    private static UserRole ParseRole(string role)
+    {
+        if (Enum.TryParse<UserRole>(role, ignoreCase: true, out var parsedRole) &&
+            parsedRole is UserRole.Admin or UserRole.AppAdmin or UserRole.Developer)
+        {
+            return parsedRole;
+        }
+
+        throw new InvalidOperationException("SeedAdmin__Role must be Developer, AppAdmin, or Admin.");
     }
 
     private static void Validate(DevelopmentAdminSeedOptions options)

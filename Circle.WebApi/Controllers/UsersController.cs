@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "AppAdmin,Admin,Developer")]
 [Route("api/users")]
 public sealed class UsersController(IUserManagementService userManagementService) : ControllerBase
 {
@@ -40,3 +40,5 @@ public sealed class UsersController(IUserManagementService userManagementService
         return Ok(await userManagementService.SetPasswordAsync(userId, request, cancellationToken));
     }
 }
+
+

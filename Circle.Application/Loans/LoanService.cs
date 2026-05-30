@@ -340,7 +340,7 @@ public sealed class LoanService(
     private async Task<User> RequireAdminAsync(CancellationToken cancellationToken)
     {
         var currentUser = await GetCurrentUserAsync(cancellationToken);
-        if (currentUser.Role != UserRole.Admin)
+        if (!currentUser.Role.HasAdminAccess())
         {
             throw new AppException("Only admins can approve or reject loans.");
         }
@@ -350,7 +350,7 @@ public sealed class LoanService(
 
     private IQueryable<Loan> ApplyLoanScope(IQueryable<Loan> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -485,3 +485,4 @@ public sealed class LoanService(
                 .ToList());
     }
 }
+

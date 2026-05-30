@@ -476,6 +476,7 @@ Important settings:
 | `SeedAdmin__Password` | When seeding | Admin password, stored only as a hash after seed |
 | `SeedAdmin__FullName` | When seeding | Admin full name |
 | `SeedAdmin__Phone` | When seeding | Admin phone number |
+| `SeedAdmin__Role` | No | Seeded privileged role: `Developer`, `AppAdmin`, or legacy `Admin` |
 | `SeedAdmin__DeactivateOtherAdmins` | No | Deactivates other active admins during the seed |
 
 Production examples:
@@ -501,6 +502,7 @@ SeedAdmin__Email=admin@example.com
 SeedAdmin__Password=USE_A_TEMPORARY_STRONG_PASSWORD
 SeedAdmin__FullName=Admin User
 SeedAdmin__Phone=08000000000
+SeedAdmin__Role=Developer
 SeedAdmin__ResetPassword=true
 SeedAdmin__DeactivateOtherAdmins=false
 ```
@@ -508,8 +510,11 @@ SeedAdmin__DeactivateOtherAdmins=false
 Behavior:
 
 - If the email does not exist, the app creates an active admin.
-- If the email already exists, the app updates the profile, promotes the user to admin, activates the user, and resets the password when `SeedAdmin__ResetPassword=true`.
-- If `SeedAdmin__DeactivateOtherAdmins=true`, other active admins are deactivated, not deleted.
+- If the email already exists, the app updates the profile, promotes the user to the configured privileged role, activates the user, and resets the password when `SeedAdmin__ResetPassword=true`.
+- `Developer` is intended for development/testing access.
+- `AppAdmin` is intended for the business/application admin.
+- Legacy `Admin` rows still work for backward compatibility.
+- If `SeedAdmin__DeactivateOtherAdmins=true`, other active `Admin`, `AppAdmin`, and `Developer` users are deactivated, not deleted.
 - An audit log entry is written when the seed runs.
 
 Important:

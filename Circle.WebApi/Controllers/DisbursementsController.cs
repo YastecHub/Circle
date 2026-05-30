@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,CreditOfficer")]
+[Authorize(Roles = "AppAdmin,Admin,Developer,CreditOfficer")]
 [Route("api/disbursements")]
 public sealed class DisbursementsController(IDisbursementService disbursementService) : ControllerBase
 {
@@ -20,10 +20,12 @@ public sealed class DisbursementsController(IDisbursementService disbursementSer
         return Ok(await disbursementService.GetDisbursementsAsync(loanId, customerId, page, pageSize, cancellationToken));
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "AppAdmin,Admin,Developer")]
     [HttpPost]
     public async Task<IActionResult> RecordDisbursement(RecordDisbursementRequest request, CancellationToken cancellationToken)
     {
         return Ok(await disbursementService.RecordDisbursementAsync(request, cancellationToken));
     }
 }
+
+

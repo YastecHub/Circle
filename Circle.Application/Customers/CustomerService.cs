@@ -353,7 +353,7 @@ public sealed class CustomerService(
     private async Task<User> RequireAdminAsync(CancellationToken cancellationToken)
     {
         var currentUser = await GetCurrentUserAsync(cancellationToken);
-        if (currentUser.Role != UserRole.Admin)
+        if (!currentUser.Role.HasAdminAccess())
         {
             throw new AppException("Only admins can reassign customers.");
         }
@@ -363,7 +363,7 @@ public sealed class CustomerService(
 
     private IQueryable<Customer> ApplyCustomerScope(IQueryable<Customer> query, User currentUser)
     {
-        return currentUser.Role == UserRole.Admin
+        return currentUser.Role.HasAdminAccess()
             ? query
             : query.Where(customer => customer.AssignedCreditOfficerId == currentUser.Id);
     }
@@ -487,3 +487,4 @@ public sealed class CustomerService(
             nextDueSchedule?.OutstandingAmount);
     }
 }
+

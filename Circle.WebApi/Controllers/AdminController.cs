@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "AppAdmin,Admin,Developer")]
 [Route("api/admin")]
 public sealed class AdminController(IAdminService adminService) : ControllerBase
 {
@@ -35,3 +35,5 @@ public sealed class AdminController(IAdminService adminService) : ControllerBase
         return Ok(await adminService.GetAuditLogsAsync(action, affectedRecord, actorUserId, fromUtc, toUtc, page, pageSize, cancellationToken));
     }
 }
+
+

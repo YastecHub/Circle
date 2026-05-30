@@ -9,6 +9,7 @@ public sealed class DevelopmentAdminSeedOptions
     public string Password { get; init; } = string.Empty;
     public string FullName { get; init; } = string.Empty;
     public string Phone { get; init; } = string.Empty;
+    public string Role { get; init; } = "Developer";
     public bool ResetPassword { get; init; } = true;
     public bool DeactivateOtherAdmins { get; init; }
 }

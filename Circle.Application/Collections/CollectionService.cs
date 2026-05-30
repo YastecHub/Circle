@@ -294,7 +294,7 @@ public sealed class CollectionService(
 
     private IQueryable<CollectionActivity> ApplyActivityScope(IQueryable<CollectionActivity> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -306,7 +306,7 @@ public sealed class CollectionService(
 
     private IQueryable<LoanRepaymentSchedule> ApplyScheduleScope(IQueryable<LoanRepaymentSchedule> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -352,3 +352,4 @@ public sealed class CollectionService(
             activity.CreatedAtUtc);
     }
 }
+

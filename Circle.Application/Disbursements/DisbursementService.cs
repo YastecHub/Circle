@@ -104,7 +104,7 @@ public sealed class DisbursementService(
     private async Task<User> RequireAdminAsync(CancellationToken cancellationToken)
     {
         var currentUser = await GetCurrentUserAsync(cancellationToken);
-        if (currentUser.Role != UserRole.Admin)
+        if (!currentUser.Role.HasAdminAccess())
         {
             throw new AppException("Only admins can record disbursements.");
         }
@@ -114,7 +114,7 @@ public sealed class DisbursementService(
 
     private IQueryable<LoanDisbursement> ApplyDisbursementScope(IQueryable<LoanDisbursement> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -139,3 +139,4 @@ public sealed class DisbursementService(
             disbursement.CreatedAtUtc);
     }
 }
+

@@ -214,14 +214,14 @@ public sealed class GlobalSearchService(
 
     private IQueryable<Customer> ApplyCustomerScope(IQueryable<Customer> query, User currentUser)
     {
-        return currentUser.Role == UserRole.Admin
+        return currentUser.Role.HasAdminAccess()
             ? query
             : query.Where(customer => customer.AssignedCreditOfficerId == currentUser.Id);
     }
 
     private IQueryable<Loan> ApplyLoanScope(IQueryable<Loan> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -233,7 +233,7 @@ public sealed class GlobalSearchService(
 
     private IQueryable<Repayment> ApplyRepaymentScope(IQueryable<Repayment> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -245,7 +245,7 @@ public sealed class GlobalSearchService(
 
     private IQueryable<InboundPayment> ApplyInboundPaymentScope(IQueryable<InboundPayment> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -255,3 +255,4 @@ public sealed class GlobalSearchService(
             customer.AssignedCreditOfficerId == currentUser.Id));
     }
 }
+

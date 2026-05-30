@@ -30,7 +30,7 @@ public sealed class AuthService(
             request.Email,
             request.FullName,
             request.Phone,
-            UserRole.Admin,
+            UserRole.AppAdmin,
             branch: null,
             createdByUserId: null);
 

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,CreditOfficer")]
+[Authorize(Roles = "AppAdmin,Admin,Developer,CreditOfficer")]
 public sealed class VirtualAccountsController(IVirtualAccountService virtualAccountService) : ControllerBase
 {
     [HttpGet("api/virtual-accounts")]
@@ -27,17 +27,19 @@ public sealed class VirtualAccountsController(IVirtualAccountService virtualAcco
         return Ok(await virtualAccountService.GetCustomerVirtualAccountAsync(customerId, cancellationToken));
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "AppAdmin,Admin,Developer")]
     [HttpPost("api/customers/{customerId:guid}/virtual-account")]
     public async Task<IActionResult> RegisterCustomerVirtualAccount(Guid customerId, RegisterVirtualAccountRequest request, CancellationToken cancellationToken)
     {
         return Ok(await virtualAccountService.RegisterCustomerVirtualAccountAsync(customerId, request, cancellationToken));
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "AppAdmin,Admin,Developer")]
     [HttpPost("api/customers/{customerId:guid}/virtual-account/deactivate")]
     public async Task<IActionResult> DeactivateCustomerVirtualAccount(Guid customerId, CancellationToken cancellationToken)
     {
         return Ok(await virtualAccountService.DeactivateCustomerVirtualAccountAsync(customerId, cancellationToken));
     }
 }
+
+

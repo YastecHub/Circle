@@ -136,14 +136,14 @@ public sealed class DashboardService(
 
     private IQueryable<Customer> ApplyCustomerScope(IQueryable<Customer> query, User currentUser)
     {
-        return currentUser.Role == UserRole.Admin
+        return currentUser.Role.HasAdminAccess()
             ? query
             : query.Where(customer => customer.AssignedCreditOfficerId == currentUser.Id);
     }
 
     private IQueryable<Loan> ApplyLoanScope(IQueryable<Loan> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -155,7 +155,7 @@ public sealed class DashboardService(
 
     private IQueryable<LoanRepaymentSchedule> ApplyScheduleScope(IQueryable<LoanRepaymentSchedule> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -169,7 +169,7 @@ public sealed class DashboardService(
 
     private IQueryable<LoanDisbursement> ApplyDisbursementScope(IQueryable<LoanDisbursement> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -181,7 +181,7 @@ public sealed class DashboardService(
 
     private IQueryable<Repayment> ApplyRepaymentScope(IQueryable<Repayment> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -193,7 +193,7 @@ public sealed class DashboardService(
 
     private IQueryable<CollectionActivity> ApplyActivityScope(IQueryable<CollectionActivity> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -203,3 +203,4 @@ public sealed class DashboardService(
             customer.AssignedCreditOfficerId == currentUser.Id));
     }
 }
+

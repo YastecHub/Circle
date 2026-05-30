@@ -143,7 +143,7 @@ public sealed class VirtualAccountService(
     private async Task<User> RequireAdminAsync(CancellationToken cancellationToken)
     {
         var currentUser = await GetCurrentUserAsync(cancellationToken);
-        if (currentUser.Role != UserRole.Admin)
+        if (!currentUser.Role.HasAdminAccess())
         {
             throw new AppException("Only admins can manage customer virtual accounts.");
         }
@@ -166,7 +166,7 @@ public sealed class VirtualAccountService(
 
     private IQueryable<CustomerVirtualAccount> ApplyVirtualAccountScope(IQueryable<CustomerVirtualAccount> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -221,3 +221,4 @@ public sealed class VirtualAccountService(
             account.UpdatedAtUtc);
     }
 }
+

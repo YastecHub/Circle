@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Circle.WebApi.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,CreditOfficer")]
+[Authorize(Roles = "AppAdmin,Admin,Developer,CreditOfficer")]
 [Route("api/reconciliation")]
 public sealed class ReconciliationController(IReconciliationService reconciliationService) : ControllerBase
 {
@@ -22,10 +22,12 @@ public sealed class ReconciliationController(IReconciliationService reconciliati
         return Ok(await reconciliationService.GetInboundPaymentsAsync(search, status, customerId, page, pageSize, cancellationToken));
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "AppAdmin,Admin,Developer")]
     [HttpPost("inbound-payments")]
     public async Task<IActionResult> RecordInboundPayment(RecordInboundPaymentRequest request, CancellationToken cancellationToken)
     {
         return Ok(await reconciliationService.RecordInboundPaymentAsync(request, cancellationToken));
     }
 }
+
+

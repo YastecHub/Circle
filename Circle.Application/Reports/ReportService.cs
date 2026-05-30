@@ -274,14 +274,14 @@ public sealed class ReportService(
 
     private IQueryable<Customer> ApplyCustomerScope(IQueryable<Customer> query, User currentUser)
     {
-        return currentUser.Role == UserRole.Admin
+        return currentUser.Role.HasAdminAccess()
             ? query
             : query.Where(customer => customer.AssignedCreditOfficerId == currentUser.Id);
     }
 
     private IQueryable<Loan> ApplyLoanScope(IQueryable<Loan> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -293,7 +293,7 @@ public sealed class ReportService(
 
     private IQueryable<LoanRepaymentSchedule> ApplyScheduleScope(IQueryable<LoanRepaymentSchedule> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -307,7 +307,7 @@ public sealed class ReportService(
 
     private IQueryable<LoanDisbursement> ApplyDisbursementScope(IQueryable<LoanDisbursement> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -319,7 +319,7 @@ public sealed class ReportService(
 
     private IQueryable<Repayment> ApplyRepaymentScope(IQueryable<Repayment> query, User currentUser)
     {
-        if (currentUser.Role == UserRole.Admin)
+        if (currentUser.Role.HasAdminAccess())
         {
             return query;
         }
@@ -331,3 +331,4 @@ public sealed class ReportService(
 
     private sealed record AgingBucketDefinition(string Label, int MinimumDays, int? MaximumDays);
 }
+
