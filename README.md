@@ -471,6 +471,12 @@ Important settings:
 | `Otp__IncludeCodeInResponse` | Local only | Allows Swagger/local testing of OTP flow |
 | `FileStorage__RootPath` | No | Root path for locally stored uploaded files |
 | `Webhooks__MonnifySecret` | Production recommended | Shared secret for Monnify webhook protection |
+| `SeedAdmin__Enabled` | No | Enables one-time configured admin seed on startup |
+| `SeedAdmin__Email` | When seeding | Admin email to create or update |
+| `SeedAdmin__Password` | When seeding | Admin password, stored only as a hash after seed |
+| `SeedAdmin__FullName` | When seeding | Admin full name |
+| `SeedAdmin__Phone` | When seeding | Admin phone number |
+| `SeedAdmin__DeactivateOtherAdmins` | No | Deactivates other active admins during the seed |
 
 Production examples:
 
@@ -482,6 +488,35 @@ Jwt__SigningKey=USE_A_LONG_RANDOM_SECRET_FROM_A_PASSWORD_MANAGER
 Otp__IncludeCodeInResponse=false
 Webhooks__MonnifySecret=USE_A_PRIVATE_WEBHOOK_SECRET
 ```
+
+## Development Admin Seed
+
+The bootstrap endpoint is intentionally locked after the first user exists. To recover or create a configured development admin without weakening the public API, enable the startup admin seed through environment variables or Azure App Service Application Settings.
+
+Required settings:
+
+```text
+SeedAdmin__Enabled=true
+SeedAdmin__Email=admin@example.com
+SeedAdmin__Password=USE_A_TEMPORARY_STRONG_PASSWORD
+SeedAdmin__FullName=Admin User
+SeedAdmin__Phone=08000000000
+SeedAdmin__ResetPassword=true
+SeedAdmin__DeactivateOtherAdmins=false
+```
+
+Behavior:
+
+- If the email does not exist, the app creates an active admin.
+- If the email already exists, the app updates the profile, promotes the user to admin, activates the user, and resets the password when `SeedAdmin__ResetPassword=true`.
+- If `SeedAdmin__DeactivateOtherAdmins=true`, other active admins are deactivated, not deleted.
+- An audit log entry is written when the seed runs.
+
+Important:
+
+- Disable `SeedAdmin__Enabled` after confirming login.
+- Remove `SeedAdmin__Password` from Azure settings after the seed is complete.
+- Do not commit real seed passwords to source control.
 
 ## Database Migrations
 

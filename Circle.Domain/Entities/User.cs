@@ -41,6 +41,18 @@ public sealed class User : BaseEntity
         PasswordHash = passwordHash;
     }
 
+    public void UpdateProfile(string fullName, string phone, string? branch)
+    {
+        FullName = fullName.Trim();
+        Phone = phone.Trim();
+        Branch = branch?.Trim();
+    }
+
+    public void ChangeRole(UserRole role)
+    {
+        Role = role;
+    }
+
     public void Activate()
     {
         Status = UserStatus.Active;

@@ -154,6 +154,8 @@ try
 
     app.MapControllers();
 
+    await app.SeedDevelopmentAdminAsync();
+
     app.Run();
 }
 catch (Exception exception) when (exception.GetType().Name != "HostAbortedException")
