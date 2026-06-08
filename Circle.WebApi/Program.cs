@@ -51,13 +51,12 @@ try
     {
         options.EnableForHttps = true;
     });
-    var allowedCorsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("CircleFrontend", policy =>
         {
             policy
-                .WithOrigins(allowedCorsOrigins)
+                .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
